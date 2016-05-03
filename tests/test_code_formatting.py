@@ -27,6 +27,7 @@ def test_flake8():
     ignore_paths = [
         os.path.join(basedir, "doc"),
         os.path.join(basedir, ".git"),
+        os.path.join(basedir, ".eggs"),
         os.path.join(basedir, "scripts")]
     files = []
 
