@@ -1,9 +1,10 @@
 from __future__ import print_function, division
-import matplotlib.pyplot as plt
+
 import numpy as np
-from __init__ import Point
-from weightbase import WeightBase
-from spaceweight import SphereWeightBase, SphereDistRel, SphereAziBin
+from spaceweight import Point
+from spaceweight.weightbase import WeightBase
+from spaceweight.sphereweight import SphereWeightBase
+from spaceweight import SphereDistRel, SphereAziBin
 from spaceweight import SphereAziRel, SphereVoronoi
 
 
@@ -25,9 +26,9 @@ def read_points(filename):
 
     return points
 
-def test_weightbase(points):
 
-    weight = WeightBase(points, sort_by_tag=True, remove_duplicate=True)
+def test_weightbase(points):
+    WeightBase(points, sort_by_tag=True, remove_duplicate=True)
 
 
 def test_sphereweightbase(points, center):
@@ -66,10 +67,10 @@ def test_sphereazirel(points, center, ref_azi=5.0):
 
     weight = SphereAziRel(points, center=center, ref_azimuth=ref_azi)
     weight.calculate_weight()
-    #weight.plot_exp_matrix()
-    #weight.plot_global_map()
-    #weight.plot_weight_histogram()
-    #weight.write_weight(filename="azirel.txt")
+    # weight.plot_exp_matrix()
+    # weight.plot_global_map()
+    # weight.plot_weight_histogram()
+    # weight.write_weight(filename="azirel.txt")
     weight.plot_azimuth_distance_distribution(nbins=12)
 
 
@@ -77,9 +78,9 @@ if __name__ == "__main__":
     points = read_points("./STATIONS")
     center = Point([0, 0], "center")
 
-    #test_weightbase(points)
-    #test_sphereweightbase(points, center)
-    #test_spheredistrel(points, center, ref_dist=20.0)
+    # test_weightbase(points)
+    # test_sphereweightbase(points, center)
+    # test_spheredistrel(points, center, ref_dist=20.0)
     test_spherevoronoi(points, center, order=1.0)
-    #test_sphereazibin(points, center)
-    #test_sphereazirel(points, center)
+    # test_sphereazibin(points, center)
+    # test_sphereazirel(points, center)

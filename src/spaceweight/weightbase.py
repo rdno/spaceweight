@@ -10,16 +10,13 @@ Contains several distance and azimuth weighting strategy on
 #           2) Bin Azimuth Weighting(from CMT3D, by Qinya Liu)
 """
 
-from __future__ import print_function, division
-
+from __future__ import print_function, division, absolute_import
 import copy
-
 import numpy as np
 import matplotlib.pyplot as plt
 import collections
-from __init__ import logger
-
 import operator
+from . import logger
 
 
 class WeightBase(object):
@@ -170,9 +167,10 @@ class WeightBase(object):
 
         weight_dict = dict()
         order = order.lower()
-        order_options = ["tag", "weight"]
-        if order not in order_options:
-            raise ValueError("Order(%s) must be in:%s" % (tag, order_options))
+        _options = ["tag", "weight"]
+        if order not in _options:
+            raise ValueError("Order(%s) must be in:%s" % (order,
+                                                          _options))
 
         for point in self.points:
             weight_dict[point.tag] = point.weight
@@ -181,7 +179,7 @@ class WeightBase(object):
         elif order == "weight":
             _sorted = sorted(weight_dict.items(), key=operator.itemgetter(1))
         else:
-            raise NotImplementedError("order options: %s" % order_options)
+            raise NotImplementedError("order options: %s" % _options)
 
         with open(filename, 'w') as fh:
             for tag, weight in _sorted:

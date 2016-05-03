@@ -18,8 +18,8 @@ class PyTest(TestCommand):
 setup(
     name="spaceweight",
     version="0.0.1",
-    license='GNU General Public License, Version 3 (GPLv3)',
-    description="Python tools for seismic spatial weighting",
+    license='GNU Lesser General Public License, version 3 (LGPLv3)',
+    description="Python tools for geographical spatial weighting",
     author="Wenjie Lei",
     author_email="lei@princeton.edu",
     url="https://github.com/wjlei1990/spaceweight",
@@ -45,12 +45,13 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
     ],
     keywords=[
-        "seismology", "tomography", "space", "weighting"
+        "geographic", "space", "weighting strategy"
     ],
     install_requires=[
-        "numpy", "obspy", "flake8", "pytest", "nose", "future>=0.14.1"
+        "numpy", "obspy>=1.0.0", "flake8", "pytest", "nose", "future>=0.14.1",
+        "scipy"
     ],
     extras_require={
-        "docs": ["sphinx", "ipython", "runipy"]
+        "docs": ["sphinx"]
     }
 )

@@ -11,14 +11,13 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
 import logging
-import collections
 import numpy as np
 
-__version__ = "0.1.4"
+__version__ = "0.1.0"
 
 # Setup the logger.
 logger = logging.getLogger("spaceweighting")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 # Prevent propagating to higher loggers.
 logger.propagate = 0
 # Console log handler.
@@ -29,7 +28,9 @@ formatter = logging.Formatter(FORMAT)
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
+
 class Point(object):
+    """ General definication of a point """
 
     def __init__(self, coordinate, tag, weight=0.0):
         self.coordinate = np.array(coordinate)
@@ -41,5 +42,24 @@ class Point(object):
     def _sanity_check(self):
         pass
 
-    def __str__(self):
-        return "Points(locations=%s, tag='%s')" % (self.coordinate, self.tag)
+    def __repr__(self):
+        return "Points(coordinates=%s, tag='%s')" % (self.coordinate, self.tag)
+
+
+class SpherePoint(Point):
+    """ Point on the sphere, coordinates on latitude and longitude """
+
+    def __init__(self, latitude, longitude, tag, weight=0.0):
+        Point.__init__(self, [latitude, longitude], tag, weight=weight)
+
+    @property
+    def latitude(self):
+        return self.coordinate[0]
+
+    @property
+    def longitude(self):
+        return self.coordinate[1]
+
+
+from .sphereweight import SphereDistRel, SphereVoronoi  # NOQA
+from .sphereweight import SphereAziBin, SphereAziRel  # NOQA

@@ -11,23 +11,23 @@ Contains several distance and azimuth weighting strategy on
            2) Bin Azimuth Weighting(from CMT3D, by Qinya Liu)
 """
 
-from __future__ import print_function, division
+from __future__ import print_function, division, absolute_import
 
 import numpy as np
-from obspy.core.util.geodetics import locations2degrees
-from obspy.core.util.geodetics import gps2DistAzimuth
+from math import cos, sin
 from matplotlib import colors
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-from math import cos, sin
-
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from spherevoronoi import SphericalVoronoi
-
 from mpl_toolkits.basemap import Basemap
-from weightbase import WeightBase
-from __init__ import Point
-from __init__ import logger
+
+from obspy.geodetics import locations2degrees
+from obspy.geodetics import gps2dist_azimuth
+
+from . import SpherePoint
+from . import logger
+from .spherevoronoi import SphericalVoronoi
+from .weightbase import WeightBase
 
 
 class SphereWeightBase(WeightBase):
@@ -52,7 +52,7 @@ class SphereWeightBase(WeightBase):
         The azimuth(unit:degree) starting from point1 to
         point 2
         """
-        _, azi, _ = gps2DistAzimuth(lat1, lon1, lat2, lon2)
+        _, azi, _ = gps2dist_azimuth(lat1, lon1, lat2, lon2)
         return azi
 
     @staticmethod
@@ -244,7 +244,7 @@ class SphereWeightBase(WeightBase):
         """
         Plot distribution of station and weight in azimuth bins
         """
-        if not isinstance(self.center, Point):
+        if not isinstance(self.center, SpherePoint):
             raise ValueError("No event information provided. Impossible to"
                              "calculate azimuth information")
 
@@ -517,7 +517,7 @@ class SphereAziBin(SphereWeightBase):
         """
         :param ref_distance: reference epicenter distance(unit: degree)
         """
-        if not isinstance(center, Point):
+        if not isinstance(center, SpherePoint):
             raise TypeError("For SphereAziBin center must be specified;"
                             "Otherwise, Azimuth can not be measured")
         SphereWeightBase.__init__(self, points, center=center,
@@ -557,7 +557,7 @@ class SphereAziRel(SphereWeightBase):
         """
         :param ref_distance: reference epicenter distance(unit: degree)
         """
-        if not isinstance(center, Point):
+        if not isinstance(center, SpherePoint):
             raise TypeError("For SphereAziBin center must be specified;"
                             "Otherwise, Azimuth can not be measured")
         SphereWeightBase.__init__(self, points, center=center,
