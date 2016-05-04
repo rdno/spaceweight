@@ -188,11 +188,11 @@ class SphereWeightBase(WeightBase):
 
         if lon0 is None:
             if self.center is not None:
-                lon_0 = self.center.coordinate[1]
+                lon0 = self.center.coordinate[1]
             else:
-                lon_0 = 180.0
+                lon0 = 180.0
 
-        m = Basemap(projection='moll', lon_0=lon_0, lat_0=0.0,
+        m = Basemap(projection='moll', lon_0=lon0, lat_0=0.0,
                     resolution='c')
 
         m.drawcoastlines()
