@@ -37,10 +37,12 @@ def test_sphereweightbase(points, center):
     weight.plot_global_map()
 
 
-def test_spheredistrel(points, center, ref_dist=1.0):
+def test_spheredistrel(points, center):
 
-    weight = SphereDistRel(points, ref_distance=ref_dist, center=center)
-    weight.calculate_weight()
+    weight = SphereDistRel(points, center=center)
+    # weight.calculate_weight(1.0)
+    # weight.scan(start=0.1, end=50.0, gap=1.0, plot=True)
+    weight.smart_scan(plot=True)
     weight.plot_exp_matrix()
     weight.plot_global_map()
     weight.plot_weight_histogram()
@@ -75,12 +77,12 @@ def test_sphereazirel(points, center, ref_azi=5.0):
 
 
 if __name__ == "__main__":
-    points = read_points("./STATIONS")
+    points = read_points("./STATIONS_waveforms")
     center = Point([0, 0], "center")
 
     # test_weightbase(points)
     # test_sphereweightbase(points, center)
-    # test_spheredistrel(points, center, ref_dist=20.0)
-    test_spherevoronoi(points, center, order=1.0)
+    test_spheredistrel(points, center)
+    # test_spherevoronoi(points, center, order=1.0)
     # test_sphereazibin(points, center)
     # test_sphereazirel(points, center)

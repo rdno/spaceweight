@@ -28,6 +28,7 @@ from . import SpherePoint
 from . import logger
 from .spherevoronoi import SphericalVoronoi
 from .weightbase import WeightBase
+from .util import search_for_ratio
 
 
 class SphereWeightBase(WeightBase):
@@ -356,16 +357,13 @@ class SphereWeightBase(WeightBase):
 
 class SphereDistRel(SphereWeightBase):
 
-    def __init__(self, points, ref_distance=1.0, center=None,
-                 remove_duplicate=False,
+    def __init__(self, points, center=None, remove_duplicate=False,
                  normalize_flag=True, normalize_mode="average"):
 
         SphereWeightBase.__init__(self, points, center=center,
                                   remove_duplicate=remove_duplicate,
                                   normalize_flag=normalize_flag,
                                   normalize_mode=normalize_mode)
-
-        self.ref_distance = ref_distance
 
         self.exp_matrix = np.zeros([self.npoints, self.npoints])
 
@@ -390,13 +388,18 @@ class SphereDistRel(SphereWeightBase):
         # np.fill_diagonal(dist_m, 0.0)
         return dist_m
 
-    def calculate_weight(self):
+    @staticmethod
+    def _transfer_dist_to_weight(dist_m, ref_distance):
+        exp_matrix = np.exp(-(dist_m / ref_distance)**2)
+        sum_exp = np.sum(exp_matrix, axis=1)
+        weight = 1. / sum_exp
+        return weight, exp_matrix
+
+    def calculate_weight(self, ref_distance):
         dist_m = self._build_distance_matrix()
 
-        self.exp_matrix = np.exp(-(dist_m / self.ref_distance)**2)
-
-        sum_exp = np.sum(self.exp_matrix, axis=1)
-        weight = 1. / sum_exp
+        weight, self.exp_matrix = \
+            self._transfer_dist_to_weight(dist_m, ref_distance)
 
         self._set_points_weights(weight)
         self._normalize_weight()
@@ -404,6 +407,77 @@ class SphereDistRel(SphereWeightBase):
         logger.info("Number of points at this stage: %d" % self.npoints)
         logger.info("Condition number of weight array(max/min): %8.2f"
                     % self.condition_number)
+
+    def scan(self, start=1.0, end=50.0, gap=1.0, plot=False, figname=None):
+
+        nscans = int((end - start) / gap) + 1
+        ref_dists = \
+            [start + gap * i for i in range(nscans)]
+        cond_nums = np.zeros(nscans)
+
+        dist_m = self._build_distance_matrix()
+        for idx, _ref_dist in enumerate(ref_dists):
+            weight, _ = self._transfer_dist_to_weight(dist_m, _ref_dist)
+            cond_nums[idx] = max(weight) / min(weight)
+
+        if plot:
+            plt.plot(ref_dists, cond_nums, 'r-*')
+            plt.xlabel("Reference distance(degree)")
+            plt.ylabel("Condition number")
+            if figname is None:
+                plt.show()
+            else:
+                plt.savefig(figname)
+        return ref_dists, cond_nums
+
+    def smart_scan(self, max_ratio=0.5, start=1.0, gap=1.0, plot=False,
+                   figname=None):
+        dist_m = self._build_distance_matrix()
+
+        ref_dists = []
+        cond_nums = []
+
+        idx = 0
+        _ref_dist = start
+        while True:
+            weight, _ = self._transfer_dist_to_weight(dist_m, _ref_dist)
+            _cond_num = max(weight) / min(weight)
+            ref_dists.append(_ref_dist)
+            cond_nums.append(_cond_num)
+            if idx >= 2 and (_cond_num < 0.95 * max(cond_nums)):
+                break
+            if _ref_dist > 200.0:
+                raise ValueError("Smart scan error with _ref_dist overflow")
+            idx += 1
+            _ref_dist += gap
+
+        threshold = max_ratio * max(cond_nums)
+        best_ref_dist, best_cond_num = \
+            search_for_ratio(ref_dists, cond_nums, threshold)
+
+        logger.info("Best ref_distance and corresponding condition number:"
+                    "[%f, %f]" % (best_ref_dist, best_cond_num))
+
+        if plot:
+            plt.plot(ref_dists, cond_nums, 'r-*')
+            plt.xlabel("Reference distance(degree)")
+            plt.ylabel("Condition number")
+            plt.plot(best_ref_dist, best_cond_num, 'g*', markersize=10)
+            plt.plot([ref_dists[0], ref_dists[-1]], [threshold, threshold],
+                     'b--')
+            if figname is None:
+                plt.show()
+            else:
+                plt.savefig(figname)
+
+        # calculate weight based on the best ref_dist value
+        weight, self.exp_matrix = \
+            self._transfer_dist_to_weight(dist_m, best_ref_dist)
+
+        self._set_points_weights(weight)
+        self._normalize_weight()
+
+        return best_ref_dist, best_cond_num
 
     def plot_exp_matrix(self, figname=None):
         self._plot_matrix(self.exp_matrix,

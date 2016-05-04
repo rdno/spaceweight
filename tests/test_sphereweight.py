@@ -45,8 +45,8 @@ def test_sphereweightbase(points, center):
 
 def test_spheredistrel(points, center):
     ref_dist = 1.0
-    weight = SphereDistRel(points, ref_distance=ref_dist, center=center)
-    weight.calculate_weight()
+    weight = SphereDistRel(points, center=center)
+    weight.calculate_weight(ref_dist)
 
 
 def test_spherevoronoi(points, center):
