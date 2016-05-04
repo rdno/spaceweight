@@ -180,19 +180,21 @@ class SphereWeightBase(WeightBase):
             plt.savefig(figname)
             plt.close(fig)
 
-    def plot_global_map(self, figname=None):
+    def plot_global_map(self, figname=None, lon0=None):
         """
         Plot global map of points and centers
         """
         fig = plt.figure(figsize=(10, 4))
 
-        if self.center is None:
-            m = Basemap(projection='moll', lon_0=180.0, lat_0=0.0,
-                        resolution='c')
-        else:
-            lon_0 = self.center.coordinate[1]
-            m = Basemap(projection='moll', lon_0=lon_0, lat_0=0.0,
-                        resolution='c')
+        if lon0 is None:
+            if self.center is not None:
+                lon_0 = self.center.coordinate[1]
+            else:
+                lon_0 = 180.0
+
+        m = Basemap(projection='moll', lon_0=lon_0, lat_0=0.0,
+                    resolution='c')
+
         m.drawcoastlines()
         m.fillcontinents()
         m.drawparallels(np.arange(-90., 120., 30.))
@@ -430,8 +432,8 @@ class SphereDistRel(SphereWeightBase):
                 plt.savefig(figname)
         return ref_dists, cond_nums
 
-    def smart_scan(self, max_ratio=0.5, start=1.0, gap=1.0, plot=False,
-                   figname=None):
+    def smart_scan(self, max_ratio=0.5, start=1.0, gap=0.5, drop_ratio=0.95,
+                   plot=False, figname=None):
         dist_m = self._build_distance_matrix()
 
         ref_dists = []
@@ -444,14 +446,16 @@ class SphereDistRel(SphereWeightBase):
             _cond_num = max(weight) / min(weight)
             ref_dists.append(_ref_dist)
             cond_nums.append(_cond_num)
-            if idx >= 2 and (_cond_num < 0.95 * max(cond_nums)):
+            if idx >= 2 and (_cond_num < drop_ratio * max(cond_nums)):
                 break
             if _ref_dist > 200.0:
                 raise ValueError("Smart scan error with _ref_dist overflow")
             idx += 1
             _ref_dist += gap
 
-        threshold = max_ratio * max(cond_nums)
+        minv = min(cond_nums)
+        maxv = max(cond_nums)
+        threshold = minv + max_ratio * (maxv - minv)
         best_ref_dist, best_cond_num = \
             search_for_ratio(ref_dists, cond_nums, threshold)
 
