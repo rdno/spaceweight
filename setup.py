@@ -49,7 +49,7 @@ setup(
     ],
     install_requires=[
         "numpy", "obspy>=1.0.0", "flake8", "pytest", "nose", "future>=0.14.1",
-        "scipy"
+        "scipy", "matplotlib"
     ],
     extras_require={
         "docs": ["sphinx"]

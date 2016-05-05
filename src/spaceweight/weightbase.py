@@ -1,20 +1,18 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 """
-Contains several distance and azimuth weighting strategy on
-# surface of a sphere
-# Distance: 1) Relative Distance Weighting
-#           2) Voronoi Weighting(a slighting modified version of:
-#              https://github.com/tylerjereddy/py_sphere_Voronoi)
-#           3) Exponential Distance Weighting(from CMT3D, by Qinya Liu)
-# Azimuth:  1) Relative Azimuth Weighting
-#           2) Bin Azimuth Weighting(from CMT3D, by Qinya Liu)
+Superclass of weight
+
+:copyright:
+    Wenjie Lei (lei@princeton.edu), 2016
+:license:
+    GNU Lesser General Public License, version 3 (LGPLv3)
+    (http://www.gnu.org/licenses/lgpl-3.0.en.html)
 """
 
 from __future__ import print_function, division, absolute_import
-import copy
 import numpy as np
 import matplotlib.pyplot as plt
-import collections
 import operator
 from . import logger
 
@@ -23,20 +21,27 @@ class WeightBase(object):
 
     def __init__(self, points, sort_by_tag=False, remove_duplicate=False,
                  normalize_flag=True, normalize_mode="average"):
+        """
+
+        :param points:
+        :param sort_by_tag:
+        :param remove_duplicate:
+        :param normalize_flag:
+        :param normalize_mode:
+        :return:
+        """
 
         self.points = points
-        self._points = copy.deepcopy(points)
+        self._points = points[:]
 
-        self.dimension = self._check_points_dims()
-
+        self._check_points_dims()
+        self.detect_duplicate_tags()
         if sort_by_tag:
             self._sort_points_by_tag()
 
         self.remove_duplicate = remove_duplicate
         if remove_duplicate:
             self._remove_duplicate_points()
-
-        self.points_coordinates = self._get_points_coordinates()
 
         normalize_mode = normalize_mode.lower()
         norm_modes = ["max", "sum", "average"]
@@ -47,12 +52,14 @@ class WeightBase(object):
         self.normalize_mode = normalize_mode
 
     def _check_points_dims(self):
-        default_dim = self.points[0].coordinate.shape
-        for point in self.points:
-            if point.coordinate.shape != default_dim:
-                raise ValueError("Dimension of points coordinate is not the "
-                                 "Same!")
-        return default_dim[0]
+        dims = [point.coordinate.shape for point in self.points]
+        if len(set(dims)) != 1:
+            raise ValueError("Points are with different dimensions: %s"
+                             % set(dims))
+
+    @property
+    def points_dimension(self):
+        return self.points[0].coordinate.shape
 
     @property
     def npoints(self):
@@ -60,80 +67,83 @@ class WeightBase(object):
 
     @property
     def points_tags(self):
-        tags = []
-        for point in self.points:
-            tags.append(point.tag)
-        return tags
+        return [point.tag for point in self.points]
 
     @property
     def condition_number(self):
         weight = self.points_weights
         return np.max(weight) / np.min(weight)
 
-    def _get_points_coordinates(self):
-        coords = []
-        for point in self.points:
-            coords.append(point.coordinate)
-        return np.array(coords)
+    @property
+    def points_coordinates(self):
+        return np.array([point.coordinate for point in self.points])
 
     @property
     def points_weights(self):
-        weights = []
-        for point in self.points:
-            weights.append(point.weight)
-        return np.array(weights)
+        return np.array([point.weight for point in self.points])
 
-    def _set_points_weights(self, weight):
-        if len(weight) != self.npoints:
+    def _set_points_weights(self, weights):
+        if len(weights) != self.npoints:
             raise ValueError("Dimension of weight(%d) not same as npoints(%d)"
-                             % (len(weight), self.npoints))
+                             % (len(weights), self.npoints))
         for idx, point in enumerate(self.points):
-            point.weight = weight[idx]
+            _w = weights[idx]
+            if _w < 0:
+                raise ValueError("weight[%d] is negative: %f!" % (idx, _w))
+            point.weight = _w
+
+    def detect_duplicate_tags(self):
+        tag_list = self.points_tags
+        tag_set = set(tag_list)
+        if len(tag_set) != len(tag_list):
+            for tag in tag_set:
+                tag_list.remove(tag)
+            raise ValueError("Duplicate tags detected: %s" % tag_list)
 
     def _sort_points_by_tag(self):
         """
         Sort station by its tag
         """
-        point_dict = dict()
-        point_list = list()
-        done_tags = []
-        for point in self.points:
-            point_dict[point.tag] = point
-            if point.tag in done_tags:
-                raise ValueError("Tags is duplicated: %s" % point.tag)
-            done_tags.append(point.tag)
-
-        od = collections.OrderedDict(sorted(point_dict.items()))
-        for key, value in od.items():
-            point_list.append(value)
-        self.points = point_list
+        self.points = sorted(self.points, key=lambda x: x.tag)
 
     def _find_duplicate_coordinates(self):
         """
-        Find duplicate points(by tag and coordinates)
+        Find duplicate points coordinates
         """
+        def _unique_row(array):
+            _arr = np.ascontiguousarray(array)
+            _arr2 = _arr.view(np.dtype(
+                (np.void, _arr.dtype.itemsize * _arr.shape[1])))
+            _, idx = np.unique(_arr2, return_index=True)
+            return idx
+
         # check coordinates
-        coords = self._get_points_coordinates()
-        dim = coords.shape[0]
-        b = np.ascontiguousarray(coords).view(np.dtype(
-            (np.void, coords.dtype.itemsize * coords.shape[1])))
-        _, idx = np.unique(b, return_index=True)
-        duplicate_list = list(set([i for i in range(dim)]) - set(idx))
-        if len(idx) + len(duplicate_list) != dim:
-            raise ValueError("The sum of dim doesn't agree")
-        duplicate_list.sort()
-        return duplicate_list
+        coords = self.points_coordinates
+        unique_idxs = _unique_row(coords)
+
+        npts = self.npoints
+        dup_idxs = list(set(range(npts)) - set(unique_idxs))
+        if len(unique_idxs) + len(dup_idxs) != npts:
+            raise ValueError("Find duplicate coordinates failed!!! Error!!!"
+                             "Please report to the developer")
+        dup_idxs.sort()
+        return dup_idxs
 
     def _remove_duplicate_points(self):
+        """
+        Remove the points with duplicated coordinates. This step is
+        required by some weighting strategy like spherevoronoi.
+        :return:
+        """
 
-        duplicate_list = self._find_duplicate_coordinates()
+        dup_idxs = self._find_duplicate_coordinates()
 
-        if len(duplicate_list) == 0:
+        if len(dup_idxs) == 0:
             logger.info("No duplicate coordinates found")
             return
 
         removed_points = []
-        for index in sorted(duplicate_list, reverse=True):
+        for index in sorted(dup_idxs, reverse=True):
             removed_points.append(self.points[index])
             del self.points[index]
 
@@ -142,12 +152,20 @@ class WeightBase(object):
 
         logger.info("Number of original npoints: %d" % len(self._points))
         logger.info("Number of points removed(duplicate coordinates): %d" %
-                    len(duplicate_list))
+                    len(dup_idxs))
         for _point in removed_points:
             logger.debug("Points removed: %s" % _point)
         logger.info("Number of remaining stations: %d" % self.npoints)
 
     def _normalize_weight(self):
+        """
+        Normalize the weights while keep the ratio of points weights the
+        same. Options are:
+            1) "average": normalize the average of weights to 1
+            2) "max": normalize the max of weights to 1
+            3) "sum": normalize the sum of weights to 1
+        :return:
+        """
         mode = self.normalize_mode
         array = self.points_weights
         if mode == "average":

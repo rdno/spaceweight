@@ -43,9 +43,9 @@ class SphereWeightBase(WeightBase):
                             normalize_mode=normalize_mode)
 
         self.center = center
-        if self.dimension != 2:
+        if self.points_dimension != (2,):
             raise ValueError("For the sphere problem, dimension of points "
-                             "should be 2: [latitude, logitude].")
+                             "should be (2,): [latitude, logitude].")
 
     @staticmethod
     def _azimuth(lat1, lon1, lat2, lon2):
