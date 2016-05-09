@@ -28,7 +28,7 @@ def test_flake8():
         os.path.join(basedir, "doc"),
         os.path.join(basedir, ".git"),
         os.path.join(basedir, ".eggs"),
-        os.path.join(basedir, "scripts")]
+        os.path.join(basedir, "examples")]
     files = []
 
     for dirpath, _, filenames in os.walk(basedir):

@@ -37,10 +37,9 @@ class Point(object):
         self.tag = tag
         self.weight = weight
 
-        self._sanity_check()
-
-    def _sanity_check(self):
-        pass
+    @property
+    def dimension(self):
+        return self.coordinate.shape
 
     def __repr__(self):
         return "Points(coordinates=%s, tag='%s')" % (self.coordinate, self.tag)
@@ -61,5 +60,5 @@ class SpherePoint(Point):
         return self.coordinate[1]
 
 
-from .sphereweight import SphereDistRel, SphereVoronoi  # NOQA
-from .sphereweight import SphereAziBin, SphereAziRel  # NOQA
+from .sphereweightbase import SphereDistRel, SphereVoronoi  # NOQA
+from .sphereazimuth import SphereAziBin, SphereAziRel  # NOQA

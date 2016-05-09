@@ -18,17 +18,27 @@ from . import logger
 
 
 class WeightBase(object):
+    """
+    The superclass for weighting. All the weighting results is supposed
+    to be kept in the point.weight.
+    """
 
-    def __init__(self, points, sort_by_tag=False, remove_duplicate=False,
-                 normalize_flag=True, normalize_mode="average"):
+    def __init__(self, points, sort_by_tag=False, remove_duplicate=False):
         """
+        :param points: list of points
+        :type points: list
+        :param sort_by_tag: sort the points by tag. This will change the
+            order of points in origin points list. We usually set the tag
+            as "network.station". So this sort will group stations in the
+            same network together. If you want to refer to the origin list
+            of points, use self._points
+        :type sort_by_tag: bool
+        :param remove_duplicate: remove the points with the same coordinate.
+            This flag should be set to true to certain methods, for example,
+            sphere voronoi because two points at the same location will
+            cause problem in sphere area partition.
+        :type remove_duplicate: bool
 
-        :param points:
-        :param sort_by_tag:
-        :param remove_duplicate:
-        :param normalize_flag:
-        :param normalize_mode:
-        :return:
         """
 
         self.points = points
@@ -40,16 +50,9 @@ class WeightBase(object):
             self._sort_points_by_tag()
 
         self.remove_duplicate = remove_duplicate
+        self.removed_points = []
         if remove_duplicate:
             self._remove_duplicate_points()
-
-        normalize_mode = normalize_mode.lower()
-        norm_modes = ["max", "sum", "average"]
-        if normalize_flag and normalize_mode not in norm_modes:
-            raise ValueError("Normalize_mode(%s) not in current options(%s)"
-                             % (normalize_mode, norm_modes))
-        self.normalize_flag = normalize_flag
-        self.normalize_mode = normalize_mode
 
     def _check_points_dims(self):
         dims = [point.coordinate.shape for point in self.points]
@@ -71,8 +74,16 @@ class WeightBase(object):
 
     @property
     def condition_number(self):
+        """
+        Condition number is defined as max weight over min weight
+        """
         weight = self.points_weights
-        return np.max(weight) / np.min(weight)
+        if np.min(weight) == 0:
+            print("The min value of weights is 0. Condition number not"
+                  "achievable")
+            return None
+        else:
+            return np.max(weight) / np.min(weight)
 
     @property
     def points_coordinates(self):
@@ -82,7 +93,8 @@ class WeightBase(object):
     def points_weights(self):
         return np.array([point.weight for point in self.points])
 
-    def _set_points_weights(self, weights):
+    @points_weights.setter
+    def points_weights(self, weights):
         if len(weights) != self.npoints:
             raise ValueError("Dimension of weight(%d) not same as npoints(%d)"
                              % (len(weights), self.npoints))
@@ -142,9 +154,8 @@ class WeightBase(object):
             logger.info("No duplicate coordinates found")
             return
 
-        removed_points = []
         for index in sorted(dup_idxs, reverse=True):
-            removed_points.append(self.points[index])
+            self.removed_points.append(self.points[index])
             del self.points[index]
 
         if len(self._find_duplicate_coordinates()) != 0:
@@ -153,11 +164,11 @@ class WeightBase(object):
         logger.info("Number of original npoints: %d" % len(self._points))
         logger.info("Number of points removed(duplicate coordinates): %d" %
                     len(dup_idxs))
-        for _point in removed_points:
+        for _point in self.removed_points:
             logger.debug("Points removed: %s" % _point)
         logger.info("Number of remaining stations: %d" % self.npoints)
 
-    def _normalize_weight(self):
+    def normalize_weight(self, mode="average"):
         """
         Normalize the weights while keep the ratio of points weights the
         same. Options are:
@@ -166,20 +177,19 @@ class WeightBase(object):
             3) "sum": normalize the sum of weights to 1
         :return:
         """
-        mode = self.normalize_mode
         array = self.points_weights
         if mode == "average":
             # average to 1
-            sum_array = sum(array)
-            array *= (len(array) / sum_array)
+            norm_factor = (len(array) / sum(array))
         elif mode == "max":
             # max to 1
-            array /= array.max()
+            norm_factor = 1.0 / max(array)
         elif mode == "sum":
             # sum to 1
-            sum_array = sum(array)
-            array /= sum_array
-        self._set_points_weights(array)
+            norm_factor = 1.0 / sum(array)
+
+        array = array * norm_factor
+        self.points_weights = array
 
     def write_weight(self, filename="weight.txt", order="tag"):
 

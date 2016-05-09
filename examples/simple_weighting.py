@@ -39,13 +39,15 @@ def test_sphereweightbase(points, center):
 
 def test_spheredistrel(points, center):
 
-    weight = SphereDistRel(points, center=center)
-    # weight.calculate_weight(1.0)
-    # weight.scan(start=0.1, end=50.0, gap=1.0, plot=True)
+    outputdir = "test23/"
+    weight = SphereDistRel(points)
+    #weight.calculate_weight(23.0)
+    #weight.scan(start=0.1, end=50.0, gap=1.0, plot=True,
+    #            figname="scan.png")
     weight.smart_scan(plot=True)
-    weight.plot_exp_matrix()
-    weight.plot_global_map()
-    weight.plot_weight_histogram()
+    weight.plot_exp_matrix(outputdir + "exp_matrx.png")
+    weight.plot_global_map(outputdir + "map.png")
+    weight.plot_weight_histogram(outputdir + "weight_hist.png")
 
 
 def test_spherevoronoi(points, center, order=1.0):

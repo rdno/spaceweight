@@ -83,7 +83,6 @@ def test_normalize_weight(spoints):
 
     for point in spoints:
         point.weight = 5
-
     wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
 
     wobj.normalize_weight(mode="average")
@@ -97,7 +96,6 @@ def test_normalize_weight(spoints):
 
 
 def test_plot_weight_histogram(spoints, tmpdir):
-
     for point in spoints:
         point.weight = 5
     wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
