@@ -3,8 +3,7 @@ from __future__ import print_function, division
 import os
 import inspect
 import pytest
-import matplotlib
-matplotlib.use("Agg")  # NOQA
+import matplotlib.pyplot as plt
 
 import numpy as np
 import numpy.testing as npt
@@ -103,6 +102,9 @@ def test_plot_weight_histogram(spoints, tmpdir):
     for point in spoints:
         point.weight = 5
     wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
+
+    # Force agg backend.
+    plt.switch_backend('agg')
 
     figname = os.path.join(str(tmpdir), "hist.png")
     wobj.plot_weight_histogram(figname)

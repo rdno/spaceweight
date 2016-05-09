@@ -38,14 +38,13 @@ def get_bin_number(data, start, end, nbins):
     :param azimuth: test test test
     :return:
     """
+    if data < start or data > end:
+        raise ValueError("data(%f) not in range(%f, %f)"
+                         % (data, start, end))
     bin_size = (end - start) / nbins
     bin_idx = int(data / bin_size)
     if bin_idx == nbins:
         bin_idx = nbins - 1
-        return bin_idx
-    elif bin_idx > nbins:
-        raise ValueError("bin idx larger than nbins: %d < %d" %
-                         (bin_idx, nbins))
     return bin_idx
 
 

@@ -1,5 +1,6 @@
 import spaceweight.util as util
 import numpy as np
+import numpy.testing as npt
 import pytest
 
 
@@ -31,3 +32,14 @@ def test_get_bin_number():
 
     with pytest.raises(ValueError):
         util.get_bin_number(-0.1, start, end, nbins)
+
+
+def test_array_into_bins():
+    array = np.array([0, 0, 0, 0, 0, 1, 1, 1, 2, 2, 3, 4])
+    start = 0
+    end = 4
+    nbins = 4
+    bins, bins_dict = util.sort_array_into_bins(array, start, end, nbins)
+    npt.assert_allclose(bins, [5, 3, 2, 2])
+    assert bins_dict == {0: [0, 1, 2, 3, 4], 1: [5, 6, 7],
+                         2: [8, 9], 3: [10, 11]}
