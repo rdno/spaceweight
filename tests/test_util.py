@@ -16,5 +16,18 @@ def test_search_for_ratio():
         util.search_for_ratio(array, 10)
 
 
-def get_bin_number():
-    pass
+def test_get_bin_number():
+    start = 0
+    end = 360
+    nbins = 12
+
+    assert util.get_bin_number(0, start, end, nbins) == 0
+    assert util.get_bin_number(1.0, start, end, nbins) == 0
+    assert util.get_bin_number(60.0, start, end, nbins) == 2
+    assert util.get_bin_number(360, start, end, nbins) == 11
+
+    with pytest.raises(ValueError):
+        util.get_bin_number(360.1, start, end, nbins)
+
+    with pytest.raises(ValueError):
+        util.get_bin_number(-0.1, start, end, nbins)

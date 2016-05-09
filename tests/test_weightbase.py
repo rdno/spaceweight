@@ -3,6 +3,8 @@ from __future__ import print_function, division
 import os
 import inspect
 import pytest
+import matplotlib
+matplotlib.use("Agg")  # NOQA
 
 import numpy as np
 import numpy.testing as npt
