@@ -3,13 +3,13 @@ from __future__ import print_function, division
 import os
 import inspect
 import pytest
-import matplotlib.pyplot as plt
 
 import numpy as np
 import numpy.testing as npt
 
-from spaceweight import Point
-from spaceweight.weightbase import WeightBase
+from spaceweight import SpherePoint
+from spaceweight.sphereweightbase import SphereWeightBase
+from spaceweight.sphereweightbase import _azimuth, _distance
 
 CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(
      inspect.currentframe())))
@@ -27,8 +27,7 @@ def parse_station_file(filename):
         tag = "%s_%s" % (nw, sta)
         lat = float(info[2])
         lon = float(info[3])
-        coord = np.array([lat, lon])
-        pt = Point(coord, tag)
+        pt = SpherePoint(lat, lon, tag)
         pts.append(pt)
 
     return pts
@@ -42,67 +41,33 @@ def lpoints():
 
 @pytest.fixture
 def spoints():
-    POINTSFILE = os.path.join(CURRENTDIR, "data", "STATIONS_SMALL")
-    return parse_station_file(POINTSFILE)
+    return [SpherePoint(10, 0, "point1"),
+            SpherePoint(0, 10, "point2"),
+            SpherePoint(-10, 0, "point3"),
+            SpherePoint(0, -10, "point4")]
 
 
-def test_weightbase(spoints):
-    wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
-    assert wobj.points_dimension == (2,)
-    assert wobj.npoints == 5
-    assert wobj.points_tags == ["AA_BRVK", "II_AAK", "II_ASCN", "II_BFO",
-                                "IU_BORG"]
-    assert wobj.condition_number is None
-    npt.assert_allclose(wobj.points_weights, np.zeros(wobj.npoints))
+def test_azimuth():
+    npt.assert_allclose(_azimuth(0, 0, 10., 0), 0.0)
+    npt.assert_allclose(_azimuth(0, 0, 0, 10.), 90.0)
+    npt.assert_allclose(_azimuth(0, 0, -10, 0), 180.0)
+    npt.assert_allclose(_azimuth(0, 0, 0, -10), 270.0)
 
 
-def test_detect_duplicate_tags(spoints):
-    spoints.append(spoints[0])
-    with pytest.raises(ValueError) as excinfo:
-        WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
-        assert 'Duplicate tags' in excinfo
+def test_distance():
+    npt.assert_allclose(_distance(0, 0, 10., 0), 10.0)
 
 
-def test_detect_duplicate_coordinates(spoints):
-    extra_point = spoints[0]
-    extra_point.tag = "ZZ_EXTRA"
-    spoints.append(extra_point)
-    with pytest.raises(ValueError):
-        wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
-        assert wobj.npoints == 5
-        assert len(wobj.removed_points) == 1
+def test_calculate_azimuth_array(spoints):
+    center = SpherePoint(0, 0, "center")
+    obj = SphereWeightBase(spoints, center=center)
+    azis = obj._calculate_azimuth_array()
+    trues = np.array([0, 90, 180, 270])
+    npt.assert_allclose(azis, trues)
 
 
-def test_points_weights_setter(spoints):
-    wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
-    weights = np.arange(1, 6)
-    wobj.points_weights = weights
-    npt.assert_allclose(wobj.points_weights, weights)
-
-
-def test_normalize_weight(spoints):
-
-    for point in spoints:
-        point.weight = 5
-    wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
-
-    wobj.normalize_weight(mode="average")
-    npt.assert_allclose(wobj.points_weights, np.ones(5))
-
-    wobj.normalize_weight(mode="sum")
-    npt.assert_allclose(wobj.points_weights, 0.2 * np.ones(5))
-
-    wobj.normalize_weight(mode="max")
-    npt.assert_allclose(wobj.points_weights, np.ones(5))
-
-
-def test_plot_weight_histogram(spoints, tmpdir):
-    for point in spoints:
-        point.weight = 5
-    wobj = WeightBase(spoints, sort_by_tag=True, remove_duplicate=True)
-
-    # Force agg backend.
-    plt.switch_backend('agg')
-
-    figname = os.path.join(str(tmpdir), "hist.png")
-    wobj.plot_weight_histogram(figname)
+def test_calculate_distance_array(spoints):
+    center = SpherePoint(0, 0, "center")
+    obj = SphereWeightBase(spoints, center=center)
+    dists = obj._calculate_distance_array()
+    npt.assert_allclose(dists, [10, 10, 10, 10])

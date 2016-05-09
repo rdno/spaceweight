@@ -71,3 +71,18 @@ def sort_array_into_bins(array, start, end, nbins):
             raise ValueError("Error in bin sort!")
 
     return bins, bin_dict
+
+
+def scale_matrix_by_exp(matrix, ref_value=1.0, order=2.0):
+    """
+    Rescale the matrix value into exp value:
+        new_matrix[i][j] = exp(-(matrix[i][j] / ref_value) ** value)
+
+    :param matrix:
+    :param ref_value:
+    :param order:
+    :return:
+    """
+    exp_matrix = np.exp(-(matrix / ref_value) ** order)
+    sum_on_row = np.sum(exp_matrix, axis=1)
+    return exp_matrix, sum_on_row

@@ -28,7 +28,7 @@ from .weightbase import WeightBase
 from .plot_util import plot_circular_sector, plot_points_in_polar
 from .plot_util import plot_rings_in_polar, plot_two_histograms
 from .plot_util import plot_2d_matrix
-from .util import sort_array_into_bins
+from .util import sort_array_into_bins, scale_matrix_by_exp
 from . import logger
 from .util import search_for_ratio
 from .spherevoronoi import SphericalVoronoi
@@ -300,9 +300,9 @@ class SphereDistRel(SphereWeightBase):
         :param ref_distance:
         :return:
         """
-        exp_matrix = np.exp(-(dist_m / ref_distance)**2)
-        sum_exp = np.sum(exp_matrix, axis=1)
-        weight = 1. / sum_exp
+        exp_matrix, sum_on_row = scale_matrix_by_exp(dist_m, ref_distance,
+                                                     order=2.0)
+        weight = 1. / sum_on_row
         return weight, exp_matrix
 
     def calculate_weight(self, ref_distance):
