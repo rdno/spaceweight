@@ -16,7 +16,6 @@ import numpy as np
 from math import cos, sin
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from mpl_toolkits.basemap import Basemap
 from matplotlib import colors
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
@@ -159,6 +158,8 @@ class SphereWeightBase(WeightBase):
         """
         Plot global map of points and centers
         """
+        from mpl_toolkits.basemap import Basemap
+
         fig = plt.figure(figsize=(10, 4))
 
         if lon0 is None:
