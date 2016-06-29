@@ -1,0 +1,573 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spaceweight.spherevoronoi &mdash; spaceweight 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="spaceweight 0.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="spaceweight" href="../spaceweight.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for spaceweight.spherevoronoi</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Spherical Voronoi Code</span>
+
+<span class="sd">.. versionadded:: 0.17.0</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1">#</span>
+<span class="c1"># Copyright (C)  Tyler Reddy, Ross Hemsley, Edd Edmondson,</span>
+<span class="c1">#                Nikolai Nowaczyk, Joe Pitt-Francis, 2015.</span>
+<span class="c1">#</span>
+<span class="c1"># Distributed under the same BSD license as Scipy.</span>
+<span class="c1">#</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">scipy._lib._version</span> <span class="kn">import</span> <span class="n">NumpyVersion</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">distance</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+
+<span class="c1"># Whether Numpy has stacked matrix linear algebra</span>
+<span class="n">HAS_NUMPY_VEC_DET</span> <span class="o">=</span> <span class="p">(</span><span class="n">NumpyVersion</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="s1">&#39;1.8.0&#39;</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SphericalVoronoi&#39;</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">convert_cartesian_to_sphere</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="n">angle_measure</span><span class="o">=</span><span class="s1">&#39;radians&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Take shape (3, ) cartesian coord_array and</span>
+<span class="sd">    return an array of the same shape in spherical</span>
+<span class="sd">    polar form (r, theta, phi). Based on StackOverflow</span>
+<span class="sd">    response: http://stackoverflow.com/a/4116899</span>
+<span class="sd">    use radians for the angles by default, degrees</span>
+<span class="sd">    if angle_measure == &#39;degrees&#39;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">spherical_coord</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="n">spherical_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">coords</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+    <span class="n">spherical_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">spherical_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">spherical_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">angle_measure</span> <span class="o">==</span> <span class="s1">&#39;degrees&#39;</span><span class="p">:</span>
+        <span class="n">spherical_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">spherical_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">spherical_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">spherical_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">spherical_coord</span>
+
+
+<span class="k">def</span> <span class="nf">calculate_haversine_distance</span><span class="p">(</span><span class="n">point_1</span><span class="p">,</span> <span class="n">point_2</span><span class="p">,</span> <span class="n">sphere_radius</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Calculate the haversine-based distance between two points on the</span>
+<span class="sd">    surface of a sphere. Should be more accurate than the arc cosine</span>
+<span class="sd">    strategy. See, for example:</span>
+<span class="sd">    http://en.wikipedia.org/wiki/Haversine_formula</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">spherical_array_1</span> <span class="o">=</span> <span class="n">convert_cartesian_to_sphere</span><span class="p">(</span><span class="n">point_1</span><span class="p">)</span>
+    <span class="n">spherical_array_2</span> <span class="o">=</span> <span class="n">convert_cartesian_to_sphere</span><span class="p">(</span><span class="n">point_2</span><span class="p">)</span>
+    <span class="n">lambda_1</span> <span class="o">=</span> <span class="n">spherical_array_1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">lambda_2</span> <span class="o">=</span> <span class="n">spherical_array_2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">phi_1</span> <span class="o">=</span> <span class="n">spherical_array_1</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">phi_2</span> <span class="o">=</span> <span class="n">spherical_array_2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="c1"># we rewrite the standard Haversine slightly as</span>
+    <span class="c1"># long/lat is not the same as spherical</span>
+    <span class="c1"># coordinates - phi differs by pi/4</span>
+    <span class="n">spherical_distance</span> <span class="o">=</span> \
+        <span class="mf">2.0</span> <span class="o">*</span> <span class="n">sphere_radius</span> <span class="o">*</span> \
+        <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi_2</span><span class="o">-</span><span class="n">phi_1</span><span class="p">))</span><span class="o">/</span><span class="mf">2.</span><span class="p">)</span> <span class="o">+</span>
+                            <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_1</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi_2</span><span class="p">)</span> <span class="o">*</span>
+                            <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lambda_2</span><span class="o">-</span><span class="n">lambda_1</span><span class="p">))</span><span class="o">/</span><span class="mf">2.</span><span class="p">)))</span>
+    <span class="k">return</span> <span class="n">spherical_distance</span>
+
+
+<span class="k">def</span> <span class="nf">determinant_fallback</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the determinant of m using Laplace expansion in the first row.</span>
+<span class="sd">    This function is used only as a fallback to ensure backwards compatibility</span>
+<span class="sd">    with Python 2.6.</span>
+
+<span class="sd">    :param m: an array of floats assumed to be of shape (4, 4)</span>
+
+<span class="sd">    returns: determinant of m</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">det3</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the determinant of a using Sarrus&#39; rule.</span>
+
+<span class="sd">        a : an array of floats assumed to be of shape (3, 3)</span>
+
+<span class="sd">        returns : determinant of a</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> \
+            <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> \
+            <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> \
+            <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> \
+            <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> \
+            <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> \
+            <span class="o">-</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">minors</span> <span class="o">=</span> <span class="p">[</span><span class="n">det3</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="n">k</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+              <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">([(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="n">k</span> <span class="o">*</span> <span class="n">m</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">*</span> <span class="n">minors</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
+
+
+<span class="k">def</span> <span class="nf">calc_circumcenters</span><span class="p">(</span><span class="n">tetrahedrons</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the cirumcenters of the circumspheres of tetrahedrons.</span>
+
+<span class="sd">    An implementation based on</span>
+<span class="sd">    http://mathworld.wolfram.com/Circumsphere.html</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    tetrahedrons : an array of shape (N, 4, 3)</span>
+<span class="sd">        consisting of N tetrahedrons defined by 4 points in 3D</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    ----------</span>
+<span class="sd">    circumcenters : an array of shape (N, 3)</span>
+<span class="sd">        consisting of the N circumcenters of the tetrahedrons in 3D</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">num</span> <span class="o">=</span> <span class="n">tetrahedrons</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">tetrahedrons</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="n">num</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">))),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">sums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">tetrahedrons</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">sums</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">],</span> <span class="n">a</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">HAS_NUMPY_VEC_DET</span><span class="p">:</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">dx</span><span class="p">)</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">dz</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">det</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">determinant_fallback</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">dx</span><span class="p">])</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">determinant_fallback</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">dy</span><span class="p">])</span>
+        <span class="n">dz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">determinant_fallback</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">dz</span><span class="p">])</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">determinant_fallback</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">a</span><span class="p">])</span>
+
+    <span class="n">nominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span><span class="p">))</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">a</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">nominator</span> <span class="o">/</span> <span class="n">denominator</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+
+
+<span class="k">def</span> <span class="nf">project_to_sphere</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Projects the elements of points onto the sphere defined</span>
+<span class="sd">    by center and radius.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : array of floats of shape (npoints, ndim)</span>
+<span class="sd">             consisting of the points in a space of dimension ndim</span>
+<span class="sd">    center : array of floats of shape (ndim,)</span>
+<span class="sd">            the center of the sphere to project on</span>
+<span class="sd">    radius : float</span>
+<span class="sd">            the radius of the sphere to project on</span>
+
+<span class="sd">    returns: array of floats of shape (npoints, ndim)</span>
+<span class="sd">            the points projected onto the sphere</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">lengths</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">cdist</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">center</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">points</span> <span class="o">-</span> <span class="n">center</span><span class="p">)</span> <span class="o">/</span> <span class="n">lengths</span> <span class="o">*</span> <span class="n">radius</span> <span class="o">+</span> <span class="n">center</span>
+
+
+<div class="viewcode-block" id="SphericalVoronoi"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.spherevoronoi.SphericalVoronoi">[docs]</a><span class="k">class</span> <span class="nc">SphericalVoronoi</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot; Voronoi diagrams on the surface of a sphere.</span>
+
+<span class="sd">    .. versionadded:: 0.17.0</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : ndarray of floats, shape (npoints, 3)</span>
+<span class="sd">        Coordinates of points to construct a spherical</span>
+<span class="sd">        Voronoi diagram from</span>
+<span class="sd">    radius : float, optional</span>
+<span class="sd">        Radius of the sphere (Default: 1)</span>
+<span class="sd">    center : ndarray of floats, shape (3,)</span>
+<span class="sd">        Center of sphere (Default: origin)</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    points : double array of shape (npoints, 3)</span>
+<span class="sd">            the points in 3D to generate the Voronoi diagram from</span>
+<span class="sd">    radius : double</span>
+<span class="sd">            radius of the sphere</span>
+<span class="sd">            Default: None (forces estimation, which is less precise)</span>
+<span class="sd">    center : double array of shape (3,)</span>
+<span class="sd">            center of the sphere</span>
+<span class="sd">            Default: None (assumes sphere is centered at origin)</span>
+<span class="sd">    vertices : double array of shape (nvertices, 3)</span>
+<span class="sd">            Voronoi vertices corresponding to points</span>
+<span class="sd">    regions : list of list of integers of shape (npoints, _ )</span>
+<span class="sd">            the n-th entry is a list consisting of the indices</span>
+<span class="sd">            of the vertices belonging to the n-th point in points</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    The spherical Voronoi diagram algorithm proceeds as follows. The Convex</span>
+<span class="sd">    Hull of the input points (generators) is calculated, and is equivalent to</span>
+<span class="sd">    their Delaunay triangulation on the surface of the sphere [Caroli]_.</span>
+<span class="sd">    A 3D Delaunay tetrahedralization is obtained by including the origin of</span>
+<span class="sd">    the coordinate system as the fourth vertex of each simplex of the Convex</span>
+<span class="sd">    Hull. The circumcenters of all tetrahedra in the system are calculated and</span>
+<span class="sd">    projected to the surface of the sphere, producing the Voronoi vertices.</span>
+<span class="sd">    The Delaunay tetrahedralization neighbour information is then used to</span>
+<span class="sd">    order the Voronoi region vertices around each generator. The latter</span>
+<span class="sd">    approach is substantially less sensitive to floating point issues than</span>
+<span class="sd">    angle-based methods of Voronoi region vertex sorting.</span>
+
+<span class="sd">    The surface area of spherical polygons is calculated by decomposing them</span>
+<span class="sd">    into triangles and using L&#39;Huilier&#39;s Theorem to calculate the spherical</span>
+<span class="sd">    excess of each triangle [Weisstein]_. The sum of the spherical excesses is</span>
+<span class="sd">    multiplied by the square of the sphere radius to obtain the surface area</span>
+<span class="sd">    of the spherical polygon. For nearly-degenerate spherical polygons an area</span>
+<span class="sd">    of approximately 0 is returned by default, rather than attempting the</span>
+<span class="sd">    unstable calculation.</span>
+
+<span class="sd">    Empirical assessment of spherical Voronoi algorithm performance suggests</span>
+<span class="sd">    quadratic time complexity (loglinear is optimal, but algorithms are more</span>
+<span class="sd">    challenging to implement). The reconstitution of the surface area of the</span>
+<span class="sd">    sphere, measured as the sum of the surface areas of all Voronoi regions,</span>
+<span class="sd">    is closest to 100 % for larger (&gt;&gt; 10) numbers of generators.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    .. [Caroli] Caroli et al. Robust and Efficient Delaunay triangulations of</span>
+<span class="sd">                points on or close to a sphere. Research Report RR-7004, 2009.</span>
+<span class="sd">    .. [Weisstein] &quot;L&#39;Huilier&#39;s Theorem.&quot; From MathWorld -- A Wolfram Web</span>
+<span class="sd">                Resource. http://mathworld.wolfram.com/LHuiliersTheorem.html</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    Voronoi : Conventional Voronoi diagrams in N dimensions.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from matplotlib import colors</span>
+<span class="sd">    &gt;&gt;&gt; from mpl_toolkits.mplot3d.art3d import Poly3DCollection</span>
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; from scipy.spatial import SphericalVoronoi</span>
+<span class="sd">    &gt;&gt;&gt; from mpl_toolkits.mplot3d import proj3d</span>
+<span class="sd">    &gt;&gt;&gt; # set input data</span>
+<span class="sd">    &gt;&gt;&gt; points = np.array([[0, 0, 1], [0, 0, -1], [1, 0, 0],</span>
+<span class="sd">    ...                    [0, 1, 0], [0, -1, 0], [-1, 0, 0], ])</span>
+<span class="sd">    &gt;&gt;&gt; center = np.array([0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; radius = 1</span>
+<span class="sd">    &gt;&gt;&gt; # calculate spherical Voronoi diagram</span>
+<span class="sd">    &gt;&gt;&gt; sv = SphericalVoronoi(points, radius, center)</span>
+<span class="sd">    &gt;&gt;&gt; # sort vertices (optional, helpful for plotting)</span>
+<span class="sd">    &gt;&gt;&gt; sv.sort_vertices_of_regions()</span>
+<span class="sd">    &gt;&gt;&gt; # generate plot</span>
+<span class="sd">    &gt;&gt;&gt; fig = plt.figure()</span>
+<span class="sd">    &gt;&gt;&gt; ax = fig.add_subplot(111, projection=&#39;3d&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # plot the unit sphere for reference (optional)</span>
+<span class="sd">    &gt;&gt;&gt; u = np.linspace(0, 2 * np.pi, 100)</span>
+<span class="sd">    &gt;&gt;&gt; v = np.linspace(0, np.pi, 100)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.outer(np.cos(u), np.sin(v))</span>
+<span class="sd">    &gt;&gt;&gt; y = np.outer(np.sin(u), np.sin(v))</span>
+<span class="sd">    &gt;&gt;&gt; z = np.outer(np.ones(np.size(u)), np.cos(v))</span>
+<span class="sd">    &gt;&gt;&gt; ax.plot_surface(x, y, z, color=&#39;y&#39;, alpha=0.1)</span>
+<span class="sd">    &gt;&gt;&gt; # plot generator points</span>
+<span class="sd">    &gt;&gt;&gt; ax.scatter(points[:, 0], points[:, 1], points[:, 2], c=&#39;b&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # plot Voronoi vertices</span>
+<span class="sd">    &gt;&gt;&gt; ax.scatter(sv.vertices[:, 0], sv.vertices[:, 1], sv.vertices[:, 2],</span>
+<span class="sd">    ...                    c=&#39;g&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; # indicate Voronoi regions (as Euclidean polygons)</span>
+<span class="sd">    &gt;&gt;&gt; for region in sv.regions:</span>
+<span class="sd">    ...    random_color = colors.rgb2hex(np.random.rand(3))</span>
+<span class="sd">    ...    polygon = Poly3DCollection([sv.vertices[region]], alpha=1.0)</span>
+<span class="sd">    ...    polygon.set_color(random_color)</span>
+<span class="sd">    ...    ax.add_collection3d(polygon)</span>
+<span class="sd">    &gt;&gt;&gt; plt.show()</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the object and starts the computation of the Voronoi</span>
+<span class="sd">        diagram.</span>
+
+<span class="sd">        points : The generator points of the Voronoi diagram assumed to be</span>
+<span class="sd">         all on the sphere with radius supplied by the radius parameter and</span>
+<span class="sd">         center supplied by the center parameter.</span>
+<span class="sd">        radius : The radius of the sphere. Will default to 1 if not supplied.</span>
+<span class="sd">        center : The center of the sphere. Will default to the origin if not</span>
+<span class="sd">         supplied.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">center</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">center</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">radius</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="n">radius</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calc_vertices_regions</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_calc_vertices_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the Voronoi vertices and regions of the generators stored</span>
+<span class="sd">        in self.points. The vertices will be stored in self.vertices and the</span>
+<span class="sd">        regions in self.regions.</span>
+
+<span class="sd">        This algorithm was discussed at PyData London 2015 by</span>
+<span class="sd">        Tyler Reddy, Ross Hemsley and Nikolai Nowaczyk</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># perform 3D Delaunay triangulation on data set</span>
+        <span class="c1"># (here ConvexHull can also be used, and is faster)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+
+        <span class="c1"># add the center to each of the simplices in tri to get the same</span>
+        <span class="c1"># tetrahedrons we&#39;d have gotten from Delaunay tetrahedralization</span>
+        <span class="n">tetrahedrons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">]</span>
+        <span class="n">tetrahedrons</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span>
+            <span class="n">tetrahedrons</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">]),</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="c1"># produce circumcenters of tetrahedrons from 3D Delaunay</span>
+        <span class="n">circumcenters</span> <span class="o">=</span> <span class="n">calc_circumcenters</span><span class="p">(</span><span class="n">tetrahedrons</span><span class="p">)</span>
+
+        <span class="c1"># project tetrahedron circumcenters to the surface of the sphere</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vertices</span> <span class="o">=</span> <span class="n">project_to_sphere</span><span class="p">(</span>
+            <span class="n">circumcenters</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">radius</span>
+        <span class="p">)</span>
+
+        <span class="c1"># calculate regions from triangulation</span>
+        <span class="n">generator_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">filter_tuple</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">,</span>
+                                <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">generator_indices</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">list_tuples_associations</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">filter_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                       <span class="n">filter_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">list_tuples_associations</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">list_tuples_associations</span><span class="p">,</span>
+                                          <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># group by generator indices to produce</span>
+        <span class="c1"># unsorted regions in nested list</span>
+        <span class="n">groups</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">list_tuples_associations</span><span class="p">,</span>
+                                      <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">groups</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">element</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">g</span><span class="p">)])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">groups</span>
+
+<div class="viewcode-block" id="SphericalVoronoi.sort_vertices_of_regions"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.spherevoronoi.SphericalVoronoi.sort_vertices_of_regions">[docs]</a>    <span class="k">def</span> <span class="nf">sort_vertices_of_regions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For each region in regions, it sorts the indices of the Voronoi</span>
+<span class="sd">        vertices such that the resulting points are in a clockwise or</span>
+<span class="sd">        counterclockwise order around the generator point.</span>
+
+<span class="sd">        This is done as follows: Recall that the n-th region in regions</span>
+<span class="sd">        surrounds the n-th generator in points and that the k-th</span>
+<span class="sd">        Voronoi vertex in vertices is the projected circumcenter of the</span>
+<span class="sd">        tetrahedron obtained by the k-th triangle in _tri.simplices (and the</span>
+<span class="sd">        origin). For each region n, we choose the first triangle (=Voronoi</span>
+<span class="sd">        vertex) in _tri.simplices and a vertex of that triangle not equal to</span>
+<span class="sd">        the center n. These determine a unique neighbor of that triangle,</span>
+<span class="sd">        which is then chosen as the second triangle. The second triangle</span>
+<span class="sd">        will have a unique vertex not equal to the current vertex or the</span>
+<span class="sd">        center. This determines a unique neighbor of the second triangle,</span>
+<span class="sd">        which is then chosen as the third triangle and so forth. We proceed</span>
+<span class="sd">        through all the triangles (=Voronoi vertices) belonging to the</span>
+<span class="sd">        generator in points and obtain a sorted version of the vertices</span>
+<span class="sd">        of its surrounding region.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">)):</span>
+            <span class="n">remaining</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">[</span><span class="n">n</span><span class="p">][:]</span>
+            <span class="n">sorted_vertices</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">current_simplex</span> <span class="o">=</span> <span class="n">remaining</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">current_vertex</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">[</span><span class="n">current_simplex</span><span class="p">]</span>
+                              <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="n">n</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">remaining</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">current_simplex</span><span class="p">)</span>
+            <span class="n">sorted_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_simplex</span><span class="p">)</span>
+            <span class="k">while</span> <span class="n">remaining</span><span class="p">:</span>
+                <span class="n">current_simplex</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">remaining</span>
+                    <span class="k">if</span> <span class="n">current_vertex</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">[</span><span class="n">s</span><span class="p">]</span>
+                    <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">current_vertex</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tri</span><span class="o">.</span><span class="n">simplices</span><span class="p">[</span><span class="n">current_simplex</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">current_vertex</span>
+                    <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">remaining</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">current_simplex</span><span class="p">)</span>
+                <span class="n">sorted_vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_simplex</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">sorted_vertices</span></div>
+
+<div class="viewcode-block" id="SphericalVoronoi.compute_surface_area"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.spherevoronoi.SphericalVoronoi.compute_surface_area">[docs]</a>    <span class="k">def</span> <span class="nf">compute_surface_area</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a dictionary with the estimated surface areas of</span>
+<span class="sd">        the Voronoi region polygons corresponding to each generator</span>
+<span class="sd">        (original data point) index. An example dictionary entry:</span>
+<span class="sd">        `{generator_index : surface_area, ...}`.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">surface_area_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_idx</span><span class="p">,</span> <span class="n">vertex_idx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">regions</span><span class="p">):</span>
+            <span class="c1"># create the array of vertices</span>
+            <span class="n">vertex_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="n">vertex_idx</span><span class="p">:</span>
+                <span class="n">vertex_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">_i</span><span class="p">])</span>
+            <span class="n">vertex_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">vertex_array</span><span class="p">)</span>
+
+            <span class="c1"># calculate surface area of one patch</span>
+            <span class="n">_surface_area</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_patch_surface_area</span><span class="p">(</span><span class="n">vertex_array</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">_surface_area</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> \
+                <span class="s2">&quot;Obtained a surface area of zero for a Voronoi region.&quot;</span>
+            <span class="n">surface_area_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_surface_area</span><span class="p">)</span>
+
+        <span class="n">surface_area_list</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">surface_area_list</span><span class="p">)</span>
+        <span class="n">coverage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_surface_area_coverage</span><span class="p">(</span><span class="n">surface_area_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">surface_area_list</span><span class="p">,</span> <span class="n">coverage</span></div>
+
+    <span class="k">def</span> <span class="nf">_surface_area_coverage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface_area_list</span><span class="p">):</span>
+        <span class="n">sphere_surface</span> <span class="o">=</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">surface_area_list</span><span class="p">)</span> <span class="o">/</span> <span class="n">sphere_surface</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_calculate_patch_surface_area</span><span class="p">(</span><span class="n">polygon_vertices</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Calculate the surface area of a polygon on the surface of</span>
+<span class="sd">        a sphere. Based on equation provided here:</span>
+<span class="sd">        http://mathworld.wolfram.com/LHuiliersTheorem.html</span>
+<span class="sd">        Decompose into triangles, calculate excess for each</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c1"># handle nearly-degenerate vertices on the unit sphere by</span>
+        <span class="c1"># returning an area close to 0 -- may be better options,</span>
+        <span class="c1"># but this is my current solution to prevent crashes, etc.</span>
+        <span class="c1"># seems to be relatively rare in my own work, but</span>
+        <span class="c1"># sufficiently common to cause crashes when iterating</span>
+        <span class="c1"># over large amounts of messy data</span>
+        <span class="k">if</span> <span class="n">distance</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="n">polygon_vertices</span><span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">7</span><span class="p">):</span>
+            <span class="k">return</span> <span class="mi">10</span> <span class="o">**</span> <span class="o">-</span><span class="mi">8</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">polygon_vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># point we start from</span>
+            <span class="n">root_point</span> <span class="o">=</span> <span class="n">polygon_vertices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">totalexcess</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># loop from 1 to n-2, with point 2 to n-1 as other</span>
+            <span class="c1"># vertex of triangle this could definitely be</span>
+            <span class="c1"># written more nicely</span>
+            <span class="n">b_point</span> <span class="o">=</span> <span class="n">polygon_vertices</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">root_b_dist</span> <span class="o">=</span> \
+                <span class="n">calculate_haversine_distance</span><span class="p">(</span><span class="n">root_point</span><span class="p">,</span> <span class="n">b_point</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">2</span><span class="p">):</span>
+                <span class="n">a_point</span> <span class="o">=</span> <span class="n">b_point</span>
+                <span class="n">b_point</span> <span class="o">=</span> <span class="n">polygon_vertices</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">root_a_dist</span> <span class="o">=</span> <span class="n">root_b_dist</span>
+                <span class="n">root_b_dist</span> <span class="o">=</span> \
+                    <span class="n">calculate_haversine_distance</span><span class="p">(</span><span class="n">root_point</span><span class="p">,</span> <span class="n">b_point</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="n">a_b_dist</span> <span class="o">=</span> \
+                    <span class="n">calculate_haversine_distance</span><span class="p">(</span><span class="n">a_point</span><span class="p">,</span> <span class="n">b_point</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="p">(</span><span class="n">root_a_dist</span> <span class="o">+</span> <span class="n">root_b_dist</span> <span class="o">+</span> <span class="n">a_b_dist</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">totalexcess</span> <span class="o">+=</span> \
+                    <span class="mi">4</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">atan</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">s</span><span class="p">)</span> <span class="o">*</span>
+                                            <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">root_a_dist</span><span class="p">))</span> <span class="o">*</span>
+                                            <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">root_b_dist</span><span class="p">))</span> <span class="o">*</span>
+                                            <span class="n">math</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">s</span><span class="o">-</span><span class="n">a_b_dist</span><span class="p">))))</span>
+            <span class="k">return</span> <span class="n">totalexcess</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../spaceweight.html">spaceweight</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Wenjie Lei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

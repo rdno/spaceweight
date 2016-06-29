@@ -1,0 +1,45 @@
+Weight
+======
+
+Here is some details about how to calculate the weight
+
+Distance Weight
+---------------
+Distance between points are used as measurements to measure the density of the points. The area with less points should be given larger weights as a balance
+
+1. Sphere Relative Distance Weighting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The points here are restricted to be located at the surface of sphere. So position could be expressed as **[latitude, longitude]**. The distance of two points |dij| is the spheric distance, which is the great-circle distance.
+
+Give a set of points, |pi|, located at the surface of a sphere, and the distance between two points, |pi| and |pj|, the distance between two points, |dij|, is the great-circle distance. Thus, the weight of the points |pi| could be expressed as:
+
+.. math::
+
+    W_i = \frac{1}{\sum_{j=1}^N exp(-(\frac{D_{ij}}{\Delta})^2)}
+
+where :math:`\Delta` is the reference distance. Here we keep the *i=j* term, using :math:`D_{ij}=0`, when *i=j*. Physically, it means the distance between one point and itself is 0.
+
+However, you still have the freedom to choose :math:`\Delta`, and the value should be picked really carefully.
+
+.. |pi| replace:: P\ :sub:`i`
+.. |pj| replace:: P\ :sub:`j`
+.. |dij| replace:: D\ :sub:`ij`
+
+2. Sphere Voronoi Weighting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This method used the area of voronoi cell as the weighting term
+
+
+Azimuth Weighting
+-----------------
+If you want to use azimuth weighting, you need to set a central point to calculte the azimuth(the azimuth is from the central point to a given point).
+
+1. Sphere Azimuth Bin Weighting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This weighting strategy sort the azimuth, and depending on the number of points falls into that bins, the weighting is determined by 1 over number of points in that bin
+
+2. Sphere Relative Azimuth Weighting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+This is very similar to **Sphere Relative Distance Weighting**
+
+

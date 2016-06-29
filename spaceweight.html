@@ -1,0 +1,785 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spaceweight package &mdash; spaceweight 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="spaceweight 0.0.1 documentation" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="spaceweight-package">
+<h1>spaceweight package<a class="headerlink" href="#spaceweight-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-spaceweight.plot_util">
+<span id="spaceweight-plot-util-module"></span><h2>spaceweight.plot_util module<a class="headerlink" href="#module-spaceweight.plot_util" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spaceweight.plot_util.plot_2d_matrix">
+<code class="descclassname">spaceweight.plot_util.</code><code class="descname">plot_2d_matrix</code><span class="sig-paren">(</span><em>matrix</em>, <em>title=''</em>, <em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/plot_util.html#plot_2d_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.plot_util.plot_2d_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot 2D matrix with color bar
+:param matrix:
+:param title:
+:param figname:
+:return:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.plot_util.plot_circular_sector">
+<code class="descclassname">spaceweight.plot_util.</code><code class="descname">plot_circular_sector</code><span class="sig-paren">(</span><em>csectors</em>, <em>title='Circular Sector'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/plot_util.html#plot_circular_sector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.plot_util.plot_circular_sector" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot circular sectors in polar axis</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>csectors</strong> &#8211; </li>
+<li><strong>title</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.plot_util.plot_points_in_polar">
+<code class="descclassname">spaceweight.plot_util.</code><code class="descname">plot_points_in_polar</code><span class="sig-paren">(</span><em>rads</em>, <em>azis</em>, <em>mode='global'</em>, <em>title='Points distribution'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/plot_util.html#plot_points_in_polar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.plot_util.plot_points_in_polar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the points in polar axis if given radius and azimuths</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rads</strong> &#8211; </li>
+<li><strong>azis</strong> &#8211; </li>
+<li><strong>mode</strong> &#8211; </li>
+<li><strong>title</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.plot_util.plot_rings_in_polar">
+<code class="descclassname">spaceweight.plot_util.</code><code class="descname">plot_rings_in_polar</code><span class="sig-paren">(</span><em>ring_bins</em>, <em>ring_edges</em>, <em>title=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/plot_util.html#plot_rings_in_polar"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.plot_util.plot_rings_in_polar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot rings in polar axis given ring bins and ring edges</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ring_bins</strong> &#8211; </li>
+<li><strong>ring_edges</strong> &#8211; </li>
+<li><strong>title</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.plot_util.plot_two_histograms">
+<code class="descclassname">spaceweight.plot_util.</code><code class="descname">plot_two_histograms</code><span class="sig-paren">(</span><em>array1</em>, <em>array2</em>, <em>bin_edges=None</em>, <em>tag1='array1'</em>, <em>tag2='array2'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/plot_util.html#plot_two_histograms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.plot_util.plot_two_histograms" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-spaceweight.sphereazimuth">
+<span id="spaceweight-sphereazimuth-module"></span><h2>spaceweight.sphereazimuth module<a class="headerlink" href="#module-spaceweight.sphereazimuth" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Class that contains several azimuth weighting strategy on</dt>
+<dd><p class="first">surface of a sphere</p>
+<dl class="last docutils">
+<dt>Azimuth:  1) Relative Azimuth Weighting</dt>
+<dd><ol class="first last arabic simple" start="2">
+<li>Bin Azimuth Weighting(from CMT3D, by Qinya Liu)</li>
+</ol>
+</dd>
+</dl>
+</dd>
+</dl>
+<dl class="class">
+<dt id="spaceweight.sphereazimuth.SphereAziBin">
+<em class="property">class </em><code class="descclassname">spaceweight.sphereazimuth.</code><code class="descname">SphereAziBin</code><span class="sig-paren">(</span><em>points</em>, <em>bin_order=0.5</em>, <em>nbins=12</em>, <em>center=None</em>, <em>sort_by_tag=False</em>, <em>remove_duplicate=False</em>, <em>normalize_mode='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spaceweight.sphereweightbase.SphereWeightBase" title="spaceweight.sphereweightbase.SphereWeightBase"><code class="xref py py-class docutils literal"><span class="pre">spaceweight.sphereweightbase.SphereWeightBase</span></code></a></p>
+<p>Sort Azimuth into certain number of bins and determine weight.
+Used in original version of CMT3D(Qinya Liu).</p>
+<dl class="method">
+<dt id="spaceweight.sphereazimuth.SphereAziBin.calculate_weight">
+<code class="descname">calculate_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziBin.calculate_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziBin.calculate_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spaceweight.sphereazimuth.SphereAziRel">
+<em class="property">class </em><code class="descclassname">spaceweight.sphereazimuth.</code><code class="descname">SphereAziRel</code><span class="sig-paren">(</span><em>points</em>, <em>center=None</em>, <em>sort_by_tag=False</em>, <em>remove_duplicate=False</em>, <em>normalize_mode='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziRel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziRel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spaceweight.sphereweightbase.SphereWeightBase" title="spaceweight.sphereweightbase.SphereWeightBase"><code class="xref py py-class docutils literal"><span class="pre">spaceweight.sphereweightbase.SphereWeightBase</span></code></a></p>
+<dl class="method">
+<dt id="spaceweight.sphereazimuth.SphereAziRel.calculate_weight">
+<code class="descname">calculate_weight</code><span class="sig-paren">(</span><em>ref_azimuth</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziRel.calculate_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziRel.calculate_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereazimuth.SphereAziRel.plot_exp_matrix">
+<code class="descname">plot_exp_matrix</code><span class="sig-paren">(</span><em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziRel.plot_exp_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziRel.plot_exp_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereazimuth.SphereAziRel.scan">
+<code class="descname">scan</code><span class="sig-paren">(</span><em>start=0.5</em>, <em>end=10.0</em>, <em>gap=0.5</em>, <em>plot=False</em>, <em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziRel.scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziRel.scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan among the range of ref_dists and return the condition number
+The defination of condition number is the max weight over min weight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> &#8211; the start of ref_distance</li>
+<li><strong>end</strong> &#8211; the end of ref_distance</li>
+<li><strong>gap</strong> &#8211; the delta value</li>
+<li><strong>plot</strong> &#8211; plot flag</li>
+<li><strong>figname</strong> &#8211; save the figure to figname</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of ref_azimuth and condition numbers</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereazimuth.SphereAziRel.smart_scan">
+<code class="descname">smart_scan</code><span class="sig-paren">(</span><em>max_ratio=0.5</em>, <em>start=0.5</em>, <em>gap=0.5</em>, <em>drop_ratio=0.9</em>, <em>plot=False</em>, <em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereazimuth.html#SphereAziRel.smart_scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereazimuth.SphereAziRel.smart_scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searching for the ref_azimuth by condition number which satisfy
+our condition. As the ref_distance increase from small values(near
+0), we know that the condition number will first increase, reach
+its maxium and then decrease. The final ref_azimuth will satisfy:</p>
+<blockquote>
+<div>optimal_cond_number = max_cond_number * max_ratio</div></blockquote>
+<dl class="docutils">
+<dt>The drop ratio determines the searching end point, which is:</dt>
+<dd>end_cond_number = max_cond_number * drop_ratio</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>max_ratio</strong> &#8211; determine the optimal ref_azimuth(return value)</li>
+<li><strong>start</strong> &#8211; search start point</li>
+<li><strong>gap</strong> &#8211; delta</li>
+<li><strong>drop_ratio</strong> &#8211; determin the search end point</li>
+<li><strong>plot</strong> &#8211; plot flag</li>
+<li><strong>figname</strong> &#8211; figure name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the optimal ref_azimuth and correspoinding condition number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spaceweight.spherevoronoi">
+<span id="spaceweight-spherevoronoi-module"></span><h2>spaceweight.spherevoronoi module<a class="headerlink" href="#module-spaceweight.spherevoronoi" title="Permalink to this headline">¶</a></h2>
+<p>Spherical Voronoi Code</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.17.0.</span></p>
+</div>
+<dl class="class">
+<dt id="spaceweight.spherevoronoi.SphericalVoronoi">
+<em class="property">class </em><code class="descclassname">spaceweight.spherevoronoi.</code><code class="descname">SphericalVoronoi</code><span class="sig-paren">(</span><em>points</em>, <em>radius=None</em>, <em>center=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/spherevoronoi.html#SphericalVoronoi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.spherevoronoi.SphericalVoronoi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Voronoi diagrams on the surface of a sphere.</p>
+<div class="versionadded">
+<p><span class="versionmodified">New in version 0.17.0.</span></p>
+</div>
+<dl class="docutils">
+<dt>points <span class="classifier-delimiter">:</span> <span class="classifier">ndarray of floats, shape (npoints, 3)</span></dt>
+<dd>Coordinates of points to construct a spherical
+Voronoi diagram from</dd>
+<dt>radius <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd>Radius of the sphere (Default: 1)</dd>
+<dt>center <span class="classifier-delimiter">:</span> <span class="classifier">ndarray of floats, shape (3,)</span></dt>
+<dd>Center of sphere (Default: origin)</dd>
+</dl>
+<dl class="docutils">
+<dt>points <span class="classifier-delimiter">:</span> <span class="classifier">double array of shape (npoints, 3)</span></dt>
+<dd>the points in 3D to generate the Voronoi diagram from</dd>
+<dt>radius <span class="classifier-delimiter">:</span> <span class="classifier">double</span></dt>
+<dd>radius of the sphere
+Default: None (forces estimation, which is less precise)</dd>
+<dt>center <span class="classifier-delimiter">:</span> <span class="classifier">double array of shape (3,)</span></dt>
+<dd>center of the sphere
+Default: None (assumes sphere is centered at origin)</dd>
+<dt>vertices <span class="classifier-delimiter">:</span> <span class="classifier">double array of shape (nvertices, 3)</span></dt>
+<dd>Voronoi vertices corresponding to points</dd>
+<dt>regions <span class="classifier-delimiter">:</span> <span class="classifier">list of list of integers of shape (npoints, _ )</span></dt>
+<dd>the n-th entry is a list consisting of the indices
+of the vertices belonging to the n-th point in points</dd>
+</dl>
+<p>The spherical Voronoi diagram algorithm proceeds as follows. The Convex
+Hull of the input points (generators) is calculated, and is equivalent to
+their Delaunay triangulation on the surface of the sphere <a class="reference internal" href="#caroli" id="id1">[Caroli]</a>.
+A 3D Delaunay tetrahedralization is obtained by including the origin of
+the coordinate system as the fourth vertex of each simplex of the Convex
+Hull. The circumcenters of all tetrahedra in the system are calculated and
+projected to the surface of the sphere, producing the Voronoi vertices.
+The Delaunay tetrahedralization neighbour information is then used to
+order the Voronoi region vertices around each generator. The latter
+approach is substantially less sensitive to floating point issues than
+angle-based methods of Voronoi region vertex sorting.</p>
+<p>The surface area of spherical polygons is calculated by decomposing them
+into triangles and using L&#8217;Huilier&#8217;s Theorem to calculate the spherical
+excess of each triangle <a class="reference internal" href="#weisstein" id="id2">[Weisstein]</a>. The sum of the spherical excesses is
+multiplied by the square of the sphere radius to obtain the surface area
+of the spherical polygon. For nearly-degenerate spherical polygons an area
+of approximately 0 is returned by default, rather than attempting the
+unstable calculation.</p>
+<p>Empirical assessment of spherical Voronoi algorithm performance suggests
+quadratic time complexity (loglinear is optimal, but algorithms are more
+challenging to implement). The reconstitution of the surface area of the
+sphere, measured as the sum of the surface areas of all Voronoi regions,
+is closest to 100 % for larger (&gt;&gt; 10) numbers of generators.</p>
+<table class="docutils citation" frame="void" id="caroli" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Caroli]</a></td><td>Caroli et al. Robust and Efficient Delaunay triangulations of
+points on or close to a sphere. Research Report RR-7004, 2009.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="weisstein" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[Weisstein]</a></td><td>&#8220;L&#8217;Huilier&#8217;s Theorem.&#8221; From MathWorld &#8211; A Wolfram Web
+Resource. <a class="reference external" href="http://mathworld.wolfram.com/LHuiliersTheorem.html">http://mathworld.wolfram.com/LHuiliersTheorem.html</a></td></tr>
+</tbody>
+</table>
+<p>Voronoi : Conventional Voronoi diagrams in N dimensions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d.art3d</span> <span class="kn">import</span> <span class="n">Poly3DCollection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">SphericalVoronoi</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">proj3d</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># set input data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">radius</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># calculate spherical Voronoi diagram</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sv</span> <span class="o">=</span> <span class="n">SphericalVoronoi</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">center</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># sort vertices (optional, helpful for plotting)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sv</span><span class="o">.</span><span class="n">sort_vertices_of_regions</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># generate plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># plot the unit sphere for reference (optional)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">u</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">plot_surface</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># plot generator points</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># plot Voronoi vertices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">sv</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">sv</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">sv</span><span class="o">.</span><span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">],</span>
+<span class="gp">... </span>                   <span class="n">c</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># indicate Voronoi regions (as Euclidean polygons)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">region</span> <span class="ow">in</span> <span class="n">sv</span><span class="o">.</span><span class="n">regions</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">random_color</span> <span class="o">=</span> <span class="n">colors</span><span class="o">.</span><span class="n">rgb2hex</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="gp">... </span>   <span class="n">polygon</span> <span class="o">=</span> <span class="n">Poly3DCollection</span><span class="p">([</span><span class="n">sv</span><span class="o">.</span><span class="n">vertices</span><span class="p">[</span><span class="n">region</span><span class="p">]],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="n">polygon</span><span class="o">.</span><span class="n">set_color</span><span class="p">(</span><span class="n">random_color</span><span class="p">)</span>
+<span class="gp">... </span>   <span class="n">ax</span><span class="o">.</span><span class="n">add_collection3d</span><span class="p">(</span><span class="n">polygon</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="spaceweight.spherevoronoi.SphericalVoronoi.compute_surface_area">
+<code class="descname">compute_surface_area</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/spherevoronoi.html#SphericalVoronoi.compute_surface_area"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.spherevoronoi.SphericalVoronoi.compute_surface_area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary with the estimated surface areas of
+the Voronoi region polygons corresponding to each generator
+(original data point) index. An example dictionary entry:
+<cite>{generator_index : surface_area, ...}</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.spherevoronoi.SphericalVoronoi.sort_vertices_of_regions">
+<code class="descname">sort_vertices_of_regions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/spherevoronoi.html#SphericalVoronoi.sort_vertices_of_regions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.spherevoronoi.SphericalVoronoi.sort_vertices_of_regions" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each region in regions, it sorts the indices of the Voronoi
+vertices such that the resulting points are in a clockwise or
+counterclockwise order around the generator point.</p>
+<p>This is done as follows: Recall that the n-th region in regions
+surrounds the n-th generator in points and that the k-th
+Voronoi vertex in vertices is the projected circumcenter of the
+tetrahedron obtained by the k-th triangle in _tri.simplices (and the
+origin). For each region n, we choose the first triangle (=Voronoi
+vertex) in _tri.simplices and a vertex of that triangle not equal to
+the center n. These determine a unique neighbor of that triangle,
+which is then chosen as the second triangle. The second triangle
+will have a unique vertex not equal to the current vertex or the
+center. This determines a unique neighbor of the second triangle,
+which is then chosen as the third triangle and so forth. We proceed
+through all the triangles (=Voronoi vertices) belonging to the
+generator in points and obtain a sorted version of the vertices
+of its surrounding region.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spaceweight.sphereweightbase">
+<span id="spaceweight-sphereweightbase-module"></span><h2>spaceweight.sphereweightbase module<a class="headerlink" href="#module-spaceweight.sphereweightbase" title="Permalink to this headline">¶</a></h2>
+<p>Class that contains sphere weighting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">copyright:</th><td class="field-body">Wenjie Lei (<a class="reference external" href="mailto:lei&#37;&#52;&#48;princeton&#46;edu">lei<span>&#64;</span>princeton<span>&#46;</span>edu</a>), 2016</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body">GNU Lesser General Public License, version 3 (LGPLv3)
+(<a class="reference external" href="http://www.gnu.org/licenses/lgpl-3.0.en.html">http://www.gnu.org/licenses/lgpl-3.0.en.html</a>)</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="spaceweight.sphereweightbase.SphereDistRel">
+<em class="property">class </em><code class="descclassname">spaceweight.sphereweightbase.</code><code class="descname">SphereDistRel</code><span class="sig-paren">(</span><em>points</em>, <em>center=None</em>, <em>sort_by_tag=False</em>, <em>remove_duplicate=False</em>, <em>normalize_mode='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereDistRel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereDistRel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spaceweight.sphereweightbase.SphereWeightBase" title="spaceweight.sphereweightbase.SphereWeightBase"><code class="xref py py-class docutils literal"><span class="pre">spaceweight.sphereweightbase.SphereWeightBase</span></code></a></p>
+<p>Class that using the distances between points to calculate the weight.
+The basic idea is if two points are close to each other, the contribution
+to weight will be high(weight will be small).</p>
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereDistRel.calculate_weight">
+<code class="descname">calculate_weight</code><span class="sig-paren">(</span><em>ref_distance</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereDistRel.calculate_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereDistRel.calculate_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the weight based upon a given reference distance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>ref_distance</strong> &#8211; </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereDistRel.plot_exp_matrix">
+<code class="descname">plot_exp_matrix</code><span class="sig-paren">(</span><em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereDistRel.plot_exp_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereDistRel.plot_exp_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereDistRel.scan">
+<code class="descname">scan</code><span class="sig-paren">(</span><em>start=1.0</em>, <em>end=50.0</em>, <em>gap=1.0</em>, <em>plot=False</em>, <em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereDistRel.scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereDistRel.scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan among the range of ref_dists and return the condition number
+The defination of condition number is the max weight over min weight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> &#8211; the start of ref_distance</li>
+<li><strong>end</strong> &#8211; the end of ref_distance</li>
+<li><strong>gap</strong> &#8211; the delta value</li>
+<li><strong>plot</strong> &#8211; plot flag</li>
+<li><strong>figname</strong> &#8211; save the figure to figname</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of ref_distance and condition numbers</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereDistRel.smart_scan">
+<code class="descname">smart_scan</code><span class="sig-paren">(</span><em>max_ratio=0.5</em>, <em>start=1.0</em>, <em>gap=0.5</em>, <em>drop_ratio=0.95</em>, <em>plot=False</em>, <em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereDistRel.smart_scan"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereDistRel.smart_scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Searching for the ref_distance by condition number which satisfy
+our condition. As the ref_distance increase from small values(near
+0), we know that the condition number will first increase, reach
+its maxium and then decrease. The final ref_distance will satisfy:</p>
+<blockquote>
+<div>optimal_cond_number = max_cond_number * max_ratio</div></blockquote>
+<dl class="docutils">
+<dt>The drop ratio determines the searching end point, which is:</dt>
+<dd>end_cond_number = max_cond_number * drop_ratio</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>max_ratio</strong> &#8211; determine the optimal ref_distance(return value)</li>
+<li><strong>start</strong> &#8211; search start point</li>
+<li><strong>gap</strong> &#8211; delta</li>
+<li><strong>drop_ratio</strong> &#8211; determin the search end point</li>
+<li><strong>plot</strong> &#8211; plot flag</li>
+<li><strong>figname</strong> &#8211; figure name</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the optimal ref_distance and correspoinding condition number</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spaceweight.sphereweightbase.SphereVoronoi">
+<em class="property">class </em><code class="descclassname">spaceweight.sphereweightbase.</code><code class="descname">SphereVoronoi</code><span class="sig-paren">(</span><em>points</em>, <em>voronoi_order=1.0</em>, <em>center=None</em>, <em>sort_by_tag=False</em>, <em>remove_duplicate=True</em>, <em>normalize_mode='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereVoronoi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereVoronoi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spaceweight.sphereweightbase.SphereWeightBase" title="spaceweight.sphereweightbase.SphereWeightBase"><code class="xref py py-class docutils literal"><span class="pre">spaceweight.sphereweightbase.SphereWeightBase</span></code></a></p>
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereVoronoi.calculate_weight">
+<code class="descname">calculate_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereVoronoi.calculate_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereVoronoi.calculate_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereVoronoi.plot_sphere">
+<code class="descname">plot_sphere</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereVoronoi.plot_sphere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereVoronoi.plot_sphere" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spaceweight.sphereweightbase.SphereWeightBase">
+<em class="property">class </em><code class="descclassname">spaceweight.sphereweightbase.</code><code class="descname">SphereWeightBase</code><span class="sig-paren">(</span><em>points</em>, <em>center=None</em>, <em>sort_by_tag=False</em>, <em>remove_duplicate=False</em>, <em>normalize_mode='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereWeightBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereWeightBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spaceweight.weightbase.WeightBase" title="spaceweight.weightbase.WeightBase"><code class="xref py py-class docutils literal"><span class="pre">spaceweight.weightbase.WeightBase</span></code></a></p>
+<p>The superclass for sphere weight. It handles 2D sphere problem,
+which means the points should be on the surface of a globe</p>
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereWeightBase.plot_global_map">
+<code class="descname">plot_global_map</code><span class="sig-paren">(</span><em>figname=None</em>, <em>lon0=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereWeightBase.plot_global_map"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereWeightBase.plot_global_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot global map of points and centers</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.sphereweightbase.SphereWeightBase.plot_station_weight_distribution">
+<code class="descname">plot_station_weight_distribution</code><span class="sig-paren">(</span><em>nbins=12</em>, <em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/sphereweightbase.html#SphereWeightBase.plot_station_weight_distribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.sphereweightbase.SphereWeightBase.plot_station_weight_distribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot distribution of station and weight in azimuth bins</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spaceweight.util">
+<span id="spaceweight-util-module"></span><h2>spaceweight.util module<a class="headerlink" href="#module-spaceweight.util" title="Permalink to this headline">¶</a></h2>
+<p>Utils</p>
+<dl class="function">
+<dt id="spaceweight.util.get_bin_number">
+<code class="descclassname">spaceweight.util.</code><code class="descname">get_bin_number</code><span class="sig-paren">(</span><em>data</em>, <em>start</em>, <em>end</em>, <em>nbins</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/util.html#get_bin_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.util.get_bin_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the bin number of given start, end and number of bins
+:param azimuth: test test test
+:return:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.util.scale_matrix_by_exp">
+<code class="descclassname">spaceweight.util.</code><code class="descname">scale_matrix_by_exp</code><span class="sig-paren">(</span><em>matrix</em>, <em>ref_value=1.0</em>, <em>order=2.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/util.html#scale_matrix_by_exp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.util.scale_matrix_by_exp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Rescale the matrix value into exp value:</dt>
+<dd>new_matrix[i][j] = exp(-(matrix[i][j] / ref_value) ** value)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>matrix</strong> &#8211; </li>
+<li><strong>ref_value</strong> &#8211; </li>
+<li><strong>order</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.util.search_for_ratio">
+<code class="descclassname">spaceweight.util.</code><code class="descname">search_for_ratio</code><span class="sig-paren">(</span><em>array</em>, <em>threshold</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/util.html#search_for_ratio"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.util.search_for_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point by point search yarray[i] ~= threshold</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>array</strong> &#8211; </li>
+<li><strong>threshold</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the index of array element, and the value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="spaceweight.util.sort_array_into_bins">
+<code class="descclassname">spaceweight.util.</code><code class="descname">sort_array_into_bins</code><span class="sig-paren">(</span><em>array</em>, <em>start</em>, <em>end</em>, <em>nbins</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/util.html#sort_array_into_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.util.sort_array_into_bins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-spaceweight.weightbase">
+<span id="spaceweight-weightbase-module"></span><h2>spaceweight.weightbase module<a class="headerlink" href="#module-spaceweight.weightbase" title="Permalink to this headline">¶</a></h2>
+<p>Superclass of weight</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">copyright:</th><td class="field-body">Wenjie Lei (<a class="reference external" href="mailto:lei&#37;&#52;&#48;princeton&#46;edu">lei<span>&#64;</span>princeton<span>&#46;</span>edu</a>), 2016</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body">GNU Lesser General Public License, version 3 (LGPLv3)
+(<a class="reference external" href="http://www.gnu.org/licenses/lgpl-3.0.en.html">http://www.gnu.org/licenses/lgpl-3.0.en.html</a>)</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="spaceweight.weightbase.WeightBase">
+<em class="property">class </em><code class="descclassname">spaceweight.weightbase.</code><code class="descname">WeightBase</code><span class="sig-paren">(</span><em>points</em>, <em>sort_by_tag=False</em>, <em>remove_duplicate=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/weightbase.html#WeightBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.weightbase.WeightBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>The superclass for weighting. All the weighting results is supposed
+to be kept in the point.weight.</p>
+<dl class="attribute">
+<dt id="spaceweight.weightbase.WeightBase.condition_number">
+<code class="descname">condition_number</code><a class="headerlink" href="#spaceweight.weightbase.WeightBase.condition_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Condition number is defined as max weight over min weight</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.weightbase.WeightBase.detect_duplicate_tags">
+<code class="descname">detect_duplicate_tags</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/weightbase.html#WeightBase.detect_duplicate_tags"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.weightbase.WeightBase.detect_duplicate_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.weightbase.WeightBase.normalize_weight">
+<code class="descname">normalize_weight</code><span class="sig-paren">(</span><em>mode='average'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/weightbase.html#WeightBase.normalize_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.weightbase.WeightBase.normalize_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalize the weights while keep the ratio of points weights the
+same. Options are:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li>&#8220;average&#8221;: normalize the average of weights to 1</li>
+<li>&#8220;max&#8221;: normalize the max of weights to 1</li>
+<li>&#8220;sum&#8221;: normalize the sum of weights to 1</li>
+</ol>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spaceweight.weightbase.WeightBase.npoints">
+<code class="descname">npoints</code><a class="headerlink" href="#spaceweight.weightbase.WeightBase.npoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.weightbase.WeightBase.plot_weight_histogram">
+<code class="descname">plot_weight_histogram</code><span class="sig-paren">(</span><em>figname=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/weightbase.html#WeightBase.plot_weight_histogram"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.weightbase.WeightBase.plot_weight_histogram" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="spaceweight.weightbase.WeightBase.points_coordinates">
+<code class="descname">points_coordinates</code><a class="headerlink" href="#spaceweight.weightbase.WeightBase.points_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="spaceweight.weightbase.WeightBase.points_dimension">
+<code class="descname">points_dimension</code><a class="headerlink" href="#spaceweight.weightbase.WeightBase.points_dimension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="spaceweight.weightbase.WeightBase.points_tags">
+<code class="descname">points_tags</code><a class="headerlink" href="#spaceweight.weightbase.WeightBase.points_tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="spaceweight.weightbase.WeightBase.points_weights">
+<code class="descname">points_weights</code><a class="headerlink" href="#spaceweight.weightbase.WeightBase.points_weights" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="spaceweight.weightbase.WeightBase.write_weight">
+<code class="descname">write_weight</code><span class="sig-paren">(</span><em>filename='weight.txt'</em>, <em>order='tag'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight/weightbase.html#WeightBase.write_weight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.weightbase.WeightBase.write_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-spaceweight">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-spaceweight" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">copyright:</th><td class="field-body">Lion Krischer (<a class="reference external" href="mailto:krischer&#37;&#52;&#48;geophysik&#46;uni-muenchen&#46;de">krischer<span>&#64;</span>geophysik<span>&#46;</span>uni-muenchen<span>&#46;</span>de</a>), 2014</td>
+</tr>
+<tr class="field-even field"><th class="field-name">license:</th><td class="field-body">GNU General Public License, Version 3
+(<a class="reference external" href="http://www.gnu.org/copyleft/gpl.html">http://www.gnu.org/copyleft/gpl.html</a>)</td>
+</tr>
+</tbody>
+</table>
+<dl class="class">
+<dt id="spaceweight.Point">
+<em class="property">class </em><code class="descclassname">spaceweight.</code><code class="descname">Point</code><span class="sig-paren">(</span><em>coordinate</em>, <em>tag</em>, <em>weight=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight.html#Point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.Point" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>General definication of a point</p>
+<dl class="attribute">
+<dt id="spaceweight.Point.dimension">
+<code class="descname">dimension</code><a class="headerlink" href="#spaceweight.Point.dimension" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spaceweight.SpherePoint">
+<em class="property">class </em><code class="descclassname">spaceweight.</code><code class="descname">SpherePoint</code><span class="sig-paren">(</span><em>latitude</em>, <em>longitude</em>, <em>tag</em>, <em>weight=0.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/spaceweight.html#SpherePoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#spaceweight.SpherePoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#spaceweight.Point" title="spaceweight.Point"><code class="xref py py-class docutils literal"><span class="pre">spaceweight.Point</span></code></a></p>
+<p>Point on the sphere, coordinates on latitude and longitude</p>
+<dl class="attribute">
+<dt id="spaceweight.SpherePoint.latitude">
+<code class="descname">latitude</code><a class="headerlink" href="#spaceweight.SpherePoint.latitude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="spaceweight.SpherePoint.longitude">
+<code class="descname">longitude</code><a class="headerlink" href="#spaceweight.SpherePoint.longitude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">spaceweight package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-spaceweight.plot_util">spaceweight.plot_util module</a></li>
+<li><a class="reference internal" href="#module-spaceweight.sphereazimuth">spaceweight.sphereazimuth module</a></li>
+<li><a class="reference internal" href="#module-spaceweight.spherevoronoi">spaceweight.spherevoronoi module</a></li>
+<li><a class="reference internal" href="#module-spaceweight.sphereweightbase">spaceweight.sphereweightbase module</a></li>
+<li><a class="reference internal" href="#module-spaceweight.util">spaceweight.util module</a></li>
+<li><a class="reference internal" href="#module-spaceweight.weightbase">spaceweight.weightbase module</a></li>
+<li><a class="reference internal" href="#module-spaceweight">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/spaceweight.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Wenjie Lei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/spaceweight.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

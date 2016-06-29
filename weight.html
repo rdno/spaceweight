@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Weight &mdash; spaceweight 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="spaceweight 0.0.1 documentation" href="index.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="weight">
+<h1>Weight<a class="headerlink" href="#weight" title="Permalink to this headline">¶</a></h1>
+<p>Here is some details about how to calculate the weight</p>
+<div class="section" id="distance-weight">
+<h2>Distance Weight<a class="headerlink" href="#distance-weight" title="Permalink to this headline">¶</a></h2>
+<p>Distance between points are used as measurements to measure the density of the points. The area with less points should be given larger weights as a balance</p>
+<div class="section" id="sphere-relative-distance-weighting">
+<h3>1. Sphere Relative Distance Weighting<a class="headerlink" href="#sphere-relative-distance-weighting" title="Permalink to this headline">¶</a></h3>
+<p>The points here are restricted to be located at the surface of sphere. So position could be expressed as <strong>[latitude, longitude]</strong>. The distance of two points D<sub>ij</sub> is the spheric distance, which is the great-circle distance.</p>
+<p>Give a set of points, P<sub>i</sub>, located at the surface of a sphere, and the distance between two points, P<sub>i</sub> and P<sub>j</sub>, the distance between two points, D<sub>ij</sub>, is the great-circle distance. Thus, the weight of the points P<sub>i</sub> could be expressed as:</p>
+<div class="math">
+\[W_i = \frac{1}{\sum_{j=1}^N exp(-(\frac{D_{ij}}{\Delta})^2)}\]</div>
+<p>where <span class="math">\(\Delta\)</span> is the reference distance. Here we keep the <em>i=j</em> term, using <span class="math">\(D_{ij}=0\)</span>, when <em>i=j</em>. Physically, it means the distance between one point and itself is 0.</p>
+<p>However, you still have the freedom to choose <span class="math">\(\Delta\)</span>, and the value should be picked really carefully.</p>
+</div>
+<div class="section" id="sphere-voronoi-weighting">
+<h3>2. Sphere Voronoi Weighting<a class="headerlink" href="#sphere-voronoi-weighting" title="Permalink to this headline">¶</a></h3>
+<p>This method used the area of voronoi cell as the weighting term</p>
+</div>
+</div>
+<div class="section" id="azimuth-weighting">
+<h2>Azimuth Weighting<a class="headerlink" href="#azimuth-weighting" title="Permalink to this headline">¶</a></h2>
+<p>If you want to use azimuth weighting, you need to set a central point to calculte the azimuth(the azimuth is from the central point to a given point).</p>
+<div class="section" id="sphere-azimuth-bin-weighting">
+<h3>1. Sphere Azimuth Bin Weighting<a class="headerlink" href="#sphere-azimuth-bin-weighting" title="Permalink to this headline">¶</a></h3>
+<p>This weighting strategy sort the azimuth, and depending on the number of points falls into that bins, the weighting is determined by 1 over number of points in that bin</p>
+</div>
+<div class="section" id="sphere-relative-azimuth-weighting">
+<h3>2. Sphere Relative Azimuth Weighting<a class="headerlink" href="#sphere-relative-azimuth-weighting" title="Permalink to this headline">¶</a></h3>
+<p>This is very similar to <strong>Sphere Relative Distance Weighting</strong></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Weight</a><ul>
+<li><a class="reference internal" href="#distance-weight">Distance Weight</a><ul>
+<li><a class="reference internal" href="#sphere-relative-distance-weighting">1. Sphere Relative Distance Weighting</a></li>
+<li><a class="reference internal" href="#sphere-voronoi-weighting">2. Sphere Voronoi Weighting</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#azimuth-weighting">Azimuth Weighting</a><ul>
+<li><a class="reference internal" href="#sphere-azimuth-bin-weighting">1. Sphere Azimuth Bin Weighting</a></li>
+<li><a class="reference internal" href="#sphere-relative-azimuth-weighting">2. Sphere Relative Azimuth Weighting</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/weight.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Wenjie Lei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/weight.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

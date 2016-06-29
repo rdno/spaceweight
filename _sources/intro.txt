@@ -1,0 +1,6 @@
+Introduction
+------------
+
+This is package is used to determine the weights give a set of points in a certain space, for example, points located in a cartesian space or on the surface of a sphere.
+
+There are two types of measurements. The first one is the distance and the second one is azimuth.

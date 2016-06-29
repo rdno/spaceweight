@@ -1,0 +1,310 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>spaceweight.sphereazimuth &mdash; spaceweight 0.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="spaceweight 0.0.1 documentation" href="../../index.html" />
+    <link rel="up" title="spaceweight" href="../spaceweight.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for spaceweight.sphereazimuth</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Class that contains several azimuth weighting strategy on</span>
+<span class="sd"> surface of a sphere</span>
+
+<span class="sd"> Azimuth:  1) Relative Azimuth Weighting</span>
+<span class="sd">           2) Bin Azimuth Weighting(from CMT3D, by Qinya Liu)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">print_function</span><span class="p">,</span> <span class="n">division</span><span class="p">,</span> <span class="n">absolute_import</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">.sphereweightbase</span> <span class="kn">import</span> <span class="n">SphereWeightBase</span>
+<span class="kn">from</span> <span class="nn">.plot_util</span> <span class="kn">import</span> <span class="n">plot_2d_matrix</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">search_for_ratio</span>
+
+
+<div class="viewcode-block" id="SphereAziBin"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziBin">[docs]</a><span class="k">class</span> <span class="nc">SphereAziBin</span><span class="p">(</span><span class="n">SphereWeightBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sort Azimuth into certain number of bins and determine weight.</span>
+<span class="sd">    Used in original version of CMT3D(Qinya Liu).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">bin_order</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">nbins</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">sort_by_tag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">remove_duplicate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">normalize_mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param ref_distance: reference epicenter distance(unit: degree)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">SphereWeightBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+                                  <span class="n">sort_by_tag</span><span class="o">=</span><span class="n">sort_by_tag</span><span class="p">,</span>
+                                  <span class="n">remove_duplicate</span><span class="o">=</span><span class="n">remove_duplicate</span><span class="p">,</span>
+                                  <span class="n">normalize_mode</span><span class="o">=</span><span class="n">normalize_mode</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_order</span> <span class="o">=</span> <span class="n">bin_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nbins</span> <span class="o">=</span> <span class="n">nbins</span>
+
+    <span class="k">def</span> <span class="nf">_weight_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">azi_count</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">azi_count</span><span class="p">)</span> <span class="o">**</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_order</span>
+
+<div class="viewcode-block" id="SphereAziBin.calculate_weight"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziBin.calculate_weight">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">npoints</span><span class="p">)</span>
+
+        <span class="n">azi_array</span><span class="p">,</span> <span class="n">azi_bin</span><span class="p">,</span> <span class="n">azi_bin_dict</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stats_azimuth_info</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nbins</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">bin_idx</span><span class="p">,</span> <span class="n">sta_list</span> <span class="ow">in</span> <span class="n">azi_bin_dict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">count_in_bin</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sta_list</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">_sta_idx</span> <span class="ow">in</span> <span class="n">sta_list</span><span class="p">:</span>
+                <span class="n">weight</span><span class="p">[</span><span class="n">_sta_idx</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weight_function</span><span class="p">(</span><span class="n">count_in_bin</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_weights</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize_weight</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of points at this stage: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">npoints</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Condition number of weight array(max/min): </span><span class="si">%8.2f</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition_number</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SphereAziRel"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziRel">[docs]</a><span class="k">class</span> <span class="nc">SphereAziRel</span><span class="p">(</span><span class="n">SphereWeightBase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">sort_by_tag</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">remove_duplicate</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">normalize_mode</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">):</span>
+        <span class="n">SphereWeightBase</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">points</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+                                  <span class="n">sort_by_tag</span><span class="o">=</span><span class="n">sort_by_tag</span><span class="p">,</span>
+                                  <span class="n">remove_duplicate</span><span class="o">=</span><span class="n">remove_duplicate</span><span class="p">,</span>
+                                  <span class="n">normalize_mode</span><span class="o">=</span><span class="n">normalize_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_azimuth_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">azi_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_azimuth_array</span><span class="p">()</span>
+
+        <span class="n">npts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npoints</span>
+        <span class="n">azi_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">npts</span><span class="p">,</span> <span class="n">npts</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">npts</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">_j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">_i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">npts</span><span class="p">):</span>
+                <span class="n">azi_matrix</span><span class="p">[</span><span class="n">_i</span><span class="p">,</span> <span class="n">_j</span><span class="p">]</span> <span class="o">=</span> <span class="n">azi_array</span><span class="p">[</span><span class="n">_i</span><span class="p">]</span> <span class="o">-</span> <span class="n">azi_array</span><span class="p">[</span><span class="n">_j</span><span class="p">]</span>
+                <span class="n">azi_matrix</span><span class="p">[</span><span class="n">_j</span><span class="p">,</span> <span class="n">_i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span> <span class="n">azi_matrix</span><span class="p">[</span><span class="n">_i</span><span class="p">,</span> <span class="n">_j</span><span class="p">]</span>
+
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">azi_matrix</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">azi_matrix</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_transfer_azi_to_weight</span><span class="p">(</span><span class="n">azi_m</span><span class="p">,</span> <span class="n">ref_azi</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transfer the azimuth matrix into weight matrix by a given</span>
+<span class="sd">        reference azimuth(distance unit is degree)</span>
+
+<span class="sd">        :param azi_m: azimuth matrix</span>
+<span class="sd">        :param ref_azi: reference azimuth</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exp_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">azi_m</span> <span class="o">/</span> <span class="n">ref_azi</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">sum_exp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exp_matrix</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">weight</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="n">sum_exp</span>
+        <span class="k">return</span> <span class="n">weight</span><span class="p">,</span> <span class="n">exp_matrix</span>
+
+<div class="viewcode-block" id="SphereAziRel.calculate_weight"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziRel.calculate_weight">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref_azimuth</span><span class="p">):</span>
+
+        <span class="n">azi_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_azimuth_matrix</span><span class="p">()</span>
+
+        <span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_matrix</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_azi_to_weight</span><span class="p">(</span><span class="n">azi_matrix</span><span class="p">,</span> <span class="n">ref_azimuth</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_weights</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize_weight</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of points at this stage: </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">npoints</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Condition number of weight array(max/min): </span><span class="si">%8.2f</span><span class="s2">&quot;</span>
+                    <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">condition_number</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SphereAziRel.scan"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziRel.scan">[docs]</a>    <span class="k">def</span> <span class="nf">scan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">figname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scan among the range of ref_dists and return the condition number</span>
+<span class="sd">        The defination of condition number is the max weight over min weight.</span>
+
+<span class="sd">        :param start: the start of ref_distance</span>
+<span class="sd">        :param end: the end of ref_distance</span>
+<span class="sd">        :param gap: the delta value</span>
+<span class="sd">        :param plot: plot flag</span>
+<span class="sd">        :param figname: save the figure to figname</span>
+<span class="sd">        :return: a list of ref_azimuth and condition numbers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nscans</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="n">gap</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">ref_azis</span> <span class="o">=</span> \
+            <span class="p">[</span><span class="n">start</span> <span class="o">+</span> <span class="n">gap</span> <span class="o">*</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nscans</span><span class="p">)]</span>
+        <span class="n">cond_nums</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nscans</span><span class="p">)</span>
+
+        <span class="n">azi_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_azimuth_matrix</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_ref_azi</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ref_azis</span><span class="p">):</span>
+            <span class="n">weight</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_azi_to_weight</span><span class="p">(</span><span class="n">azi_m</span><span class="p">,</span> <span class="n">_ref_azi</span><span class="p">)</span>
+            <span class="n">cond_nums</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ref_azis</span><span class="p">,</span> <span class="n">cond_nums</span><span class="p">,</span> <span class="s1">&#39;r-*&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Reference azimuth(degree)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Condition number&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">figname</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ref_azis</span><span class="p">,</span> <span class="n">cond_nums</span></div>
+
+<div class="viewcode-block" id="SphereAziRel.smart_scan"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziRel.smart_scan">[docs]</a>    <span class="k">def</span> <span class="nf">smart_scan</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_ratio</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">gap</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">drop_ratio</span><span class="o">=</span><span class="mf">0.90</span><span class="p">,</span>
+                   <span class="n">plot</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">figname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Searching for the ref_azimuth by condition number which satisfy</span>
+<span class="sd">        our condition. As the ref_distance increase from small values(near</span>
+<span class="sd">        0), we know that the condition number will first increase, reach</span>
+<span class="sd">        its maxium and then decrease. The final ref_azimuth will satisfy:</span>
+<span class="sd">            optimal_cond_number = max_cond_number * max_ratio</span>
+<span class="sd">        The drop ratio determines the searching end point, which is:</span>
+<span class="sd">            end_cond_number = max_cond_number * drop_ratio</span>
+
+<span class="sd">        :param max_ratio: determine the optimal ref_azimuth(return value)</span>
+<span class="sd">        :param start: search start point</span>
+<span class="sd">        :param gap: delta</span>
+<span class="sd">        :param drop_ratio: determin the search end point</span>
+<span class="sd">        :param plot: plot flag</span>
+<span class="sd">        :param figname: figure name</span>
+<span class="sd">        :return: the optimal ref_azimuth and correspoinding condition number</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">azi_m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_azimuth_matrix</span><span class="p">()</span>
+
+        <span class="n">ref_azis</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cond_nums</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">_ref_azi</span> <span class="o">=</span> <span class="n">start</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">weight</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_azi_to_weight</span><span class="p">(</span><span class="n">azi_m</span><span class="p">,</span> <span class="n">_ref_azi</span><span class="p">)</span>
+            <span class="n">_cond_num</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span> <span class="o">/</span> <span class="nb">min</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+            <span class="n">ref_azis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_ref_azi</span><span class="p">)</span>
+            <span class="n">cond_nums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_cond_num</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">_cond_num</span> <span class="o">&lt;</span> <span class="n">drop_ratio</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="n">cond_nums</span><span class="p">)):</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">_ref_azi</span> <span class="o">&gt;</span> <span class="mf">200.0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Smart scan error with _ref_dist overflow&quot;</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">_ref_azi</span> <span class="o">+=</span> <span class="n">gap</span>
+
+        <span class="n">minv</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">cond_nums</span><span class="p">)</span>
+        <span class="n">maxv</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">cond_nums</span><span class="p">)</span>
+        <span class="n">threshold</span> <span class="o">=</span> <span class="n">minv</span> <span class="o">+</span> <span class="n">max_ratio</span> <span class="o">*</span> <span class="p">(</span><span class="n">maxv</span> <span class="o">-</span> <span class="n">minv</span><span class="p">)</span>
+        <span class="n">best_idx</span><span class="p">,</span> <span class="n">best_cond_num</span> <span class="o">=</span> <span class="n">search_for_ratio</span><span class="p">(</span><span class="n">cond_nums</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="n">best_ref_azi</span> <span class="o">=</span> <span class="n">ref_azis</span><span class="p">[</span><span class="n">best_idx</span><span class="p">]</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Best ref_distance and corresponding condition number:&quot;</span>
+                    <span class="s2">&quot;[</span><span class="si">%f</span><span class="s2">, </span><span class="si">%f</span><span class="s2">]&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">best_ref_azi</span><span class="p">,</span> <span class="n">best_cond_num</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ref_azis</span><span class="p">,</span> <span class="n">cond_nums</span><span class="p">,</span> <span class="s1">&#39;r-*&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Reference distance(degree)&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Condition number&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">best_ref_azi</span><span class="p">,</span> <span class="n">best_cond_num</span><span class="p">,</span> <span class="s1">&#39;g*&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">ref_azis</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ref_azis</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">threshold</span><span class="p">,</span> <span class="n">threshold</span><span class="p">],</span>
+                     <span class="s1">&#39;b--&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">figname</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">figname</span><span class="p">)</span>
+
+        <span class="c1"># calculate weight based on the best ref_dist value</span>
+        <span class="n">weight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exp_matrix</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_azi_to_weight</span><span class="p">(</span><span class="n">azi_m</span><span class="p">,</span> <span class="n">best_ref_azi</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">points_weights</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalize_weight</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">best_ref_azi</span><span class="p">,</span> <span class="n">best_cond_num</span></div>
+
+<div class="viewcode-block" id="SphereAziRel.plot_exp_matrix"><a class="viewcode-back" href="../../spaceweight.html#spaceweight.sphereazimuth.SphereAziRel.plot_exp_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">plot_exp_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figname</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="n">plot_2d_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exp_matrix</span><span class="p">,</span>
+                       <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Azimuth Exponential Matrix&quot;</span><span class="p">,</span>
+                       <span class="n">figname</span><span class="o">=</span><span class="n">figname</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../spaceweight.html">spaceweight</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Wenjie Lei.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
