@@ -17,6 +17,7 @@ def search_for_ratio(array, threshold):
         raise ValueError("threshold(%f) is out of array range(%f, %f)"
                          % (threshold, min(array), max(array)))
 
+    _found = False
     for i in range(len(array) - 1):
         if (array[i] - threshold) * (array[i + 1] - threshold) <= 0:
             _found = True
