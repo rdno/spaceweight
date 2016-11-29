@@ -381,7 +381,7 @@ class SphereDistRel(SphereWeightBase):
         :param figname: figure name
         :return: the optimal ref_distance and correspoinding condition number
         """
-        print("npoints: %d" % self.npoints)
+        # print("npoints: %d" % self.npoints)
         if self.npoints <= 2:
             # if only two points, then the all the weights will be 1
             # anyway
