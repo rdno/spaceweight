@@ -12,8 +12,9 @@ from obspy.geodetics import locations2degrees
 from spaceweight import SpherePoint
 from spaceweight.sphereweightbase import SphereDistRel
 
+
 CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(
-     inspect.currentframe())))
+    inspect.currentframe())))
 
 
 def parse_station_file(filename):

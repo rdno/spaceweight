@@ -11,8 +11,9 @@ from spaceweight import SpherePoint
 from spaceweight.sphereweightbase import SphereWeightBase
 from spaceweight.sphereweightbase import _azimuth, _distance
 
+
 CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(
-     inspect.currentframe())))
+    inspect.currentframe())))
 
 
 def parse_station_file(filename):

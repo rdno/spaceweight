@@ -11,8 +11,9 @@ import numpy.testing as npt
 from spaceweight import Point
 from spaceweight.weightbase import WeightBase
 
+
 CURRENTDIR = os.path.dirname(os.path.abspath(inspect.getfile(
-     inspect.currentframe())))
+    inspect.currentframe())))
 
 
 def parse_station_file(filename):

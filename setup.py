@@ -15,6 +15,7 @@ class PyTest(TestCommand):
         errno = pytest.main(self.pytest_args)
         sys.exit(errno)
 
+
 setup(
     name="spaceweight",
     version="0.0.1",
@@ -48,8 +49,8 @@ setup(
         "geographic", "space", "weighting strategy"
     ],
     install_requires=[
-        "numpy", "obspy>=1.0.0", "flake8", "pytest", "nose", "future>=0.14.1",
-        "scipy", "matplotlib"
+        "numpy", "obspy>=1.0.0", "flake8>=3.0", "pytest", "nose",
+        "future>=0.14.1", "scipy", "matplotlib"
     ],
     extras_require={
         "docs": ["sphinx"]

@@ -323,7 +323,7 @@ class SphereDistRel(SphereWeightBase):
             self._transfer_dist_to_weight(dist_m, ref_distance)
 
         self.points_weights = weight
-        self.normalize_weight()
+        self.normalize_weight(self.normalize_mode)
 
         logger.info("Number of points at this stage: %d" % self.npoints)
         logger.info("Condition number of weight array(max/min): %8.2f"
@@ -385,11 +385,11 @@ class SphereDistRel(SphereWeightBase):
         if self.npoints <= 2:
             # if only two points, then the all the weights will be 1
             # anyway
-            logger.info("Less than two points so the weights are automatically"
-                        "set to 1")
+            logger.info("Less or equal than two points so the weights are "
+                        "automatically set to 1")
             self.points_weights = np.ones(self.npoints)
             self.normalize_weight()
-            return None, 1
+            return 1, 1
 
         if self.npoints <= 10:
             # reset drop ratio if there is less that 5 points
@@ -423,7 +423,14 @@ class SphereDistRel(SphereWeightBase):
             _ref_dist += gap
 
         minv = min(cond_nums)
+        minv_idx = cond_nums.index(minv)
         maxv = max(cond_nums)
+        maxv_idx = cond_nums.index(maxv)
+
+        logger.info("Min and Max condition number points([ref_dist, cond_num])"
+                    " -- min[%f, %f] -- max[%f, %f]" %
+                    (ref_dists[minv_idx], minv, ref_dists[maxv_idx], maxv))
+
         threshold = minv + max_ratio * (maxv - minv)
         best_idx, best_cond_num = search_for_ratio(cond_nums, threshold)
         best_ref_dist = ref_dists[best_idx]
@@ -442,6 +449,7 @@ class SphereDistRel(SphereWeightBase):
                 plt.show()
             else:
                 plt.savefig(figname)
+                plt.close()
 
         # calculate weight based on the best ref_dist value
         weight, self.exp_matrix = \

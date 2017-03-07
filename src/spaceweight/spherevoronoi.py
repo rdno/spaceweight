@@ -299,7 +299,6 @@ class SphericalVoronoi:
         center : The center of the sphere. Will default to the origin if not
          supplied.
         """
-
         self.points = points
         if np.any(center):
             self.center = center
@@ -401,12 +400,10 @@ class SphericalVoronoi:
             while remaining:
                 current_simplex = [
                     s for s in remaining
-                    if current_vertex in self._tri.simplices[s]
-                    ][0]
+                    if current_vertex in self._tri.simplices[s]][0]
                 current_vertex = [
                     s for s in self._tri.simplices[current_simplex]
-                    if s != n and s != current_vertex
-                    ][0]
+                    if s != n and s != current_vertex][0]
                 remaining.remove(current_simplex)
                 sorted_vertices.append(current_simplex)
             self.regions[n] = sorted_vertices
