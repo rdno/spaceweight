@@ -48,7 +48,7 @@ class SphereAziBin(SphereWeightBase):
         azi_array, azi_bin, azi_bin_dict = \
             self._stats_azimuth_info(self.nbins)
 
-        for bin_idx, sta_list in azi_bin_dict.iteritems():
+        for bin_idx, sta_list in azi_bin_dict.items():
             count_in_bin = len(sta_list)
             for _sta_idx in sta_list:
                 weight[_sta_idx] = self._weight_function(count_in_bin)

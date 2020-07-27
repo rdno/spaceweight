@@ -140,14 +140,14 @@ class SphereWeightBase(WeightBase):
 
         azi_array, azi_bin, azi_bin_dict = self._stats_azimuth_info(nbins)
         azi_weight_bin = np.zeros(nbins)
-        for bin_idx, station_list in azi_bin_dict.iteritems():
+        for bin_idx, station_list in azi_bin_dict.items():
             azi_weight_bin[bin_idx] = \
                 np.sum(self.points_weights[station_list])
 
         dist_array, dist_bin, dist_bin_dict = \
             self._stats_distance_info(nbins=nbins)
         dist_weight_bin = np.zeros(nbins)
-        for bin_idx, station_list in dist_bin_dict.iteritems():
+        for bin_idx, station_list in dist_bin_dict.items():
             dist_weight_bin[bin_idx] = \
                 np.sum(self.points_weights[station_list])
 

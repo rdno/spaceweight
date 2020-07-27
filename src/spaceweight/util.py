@@ -67,7 +67,7 @@ def sort_array_into_bins(array, start, end, nbins):
         bin_idx = get_bin_number(data, start, end, nbins)
         bin_dict[bin_idx].append(data_idx)
 
-    for idx, value in bin_dict.iteritems():
+    for idx, value in bin_dict.items():
         if bins[idx] != len(value):
             raise ValueError("Error in bin sort!")
 
